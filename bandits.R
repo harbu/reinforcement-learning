@@ -18,7 +18,7 @@ best.bandit <- which.max(bandit.means)
 # choose a random bandit instead of the most promising one. This introduces
 # some exploration instead of just exploiting all the time.
 
-epsilons <- c(0, 1/100, 1/10, 1/3, 1/2)
+epsilons <- c(0, 1/100, 1/10, 1/3, 1/2, 2/3)
 
 bandit.estimated.means <- matrix(0, nrow=length(epsilons), ncol=num.of.bandits)
 bandit.times.pulled <- matrix(0, nrow=length(epsilons), ncol=num.of.bandits)
@@ -77,4 +77,18 @@ p <- ggplot(df, aes(x=pull, y=value, color=variable)) +
     xlab("Number of pulls") +
     ylab("Average reward") +
     theme(text = element_text(size=18))
+print(p)
+
+readline("Press <ENTER> for more... ")
+
+# For each bandit plot the distribution of strategies that pulled them.
+df <- as.data.frame(t(pull.history))
+colnames(df) <- sapply(epsilons, EpsilonToColumnName)
+df$pull <- 1:num.of.pulls
+df <- melt(df, id="pull")
+df$value <- as.factor(df$value)
+
+p <- ggplot(df, aes(variable, fill=variable)) +
+     geom_bar() +
+     facet_wrap(~ value)
 print(p)
