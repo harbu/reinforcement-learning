@@ -73,7 +73,8 @@ colors <- rainbow(length(epsilons))
 df <- melt(avg.reward.per.pull, id="pull")
 
 p <- ggplot(df, aes(x=pull, y=value, color=variable)) +
-    geom_line() +
+    geom_line(size=1.3) +
     xlab("Number of pulls") +
-    ylab("Average reward")
+    ylab("Average reward") +
+    theme(text = element_text(size=18))
 print(p)
