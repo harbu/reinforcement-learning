@@ -1,0 +1,11 @@
+*~
+document.pdf
+document.out
+*.log
+*.aux
+*.bcf
+*.run.xml
+*.bbl
+*.bcg
+*.blg
+*-converted-to.pdf
