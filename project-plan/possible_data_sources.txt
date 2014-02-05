@@ -2,3 +2,5 @@ Data set intended for supervised classification of ads vs content:
 http://archive.ics.uci.edu/ml/datasets/Internet+Advertisements
 
 http://webscope.sandbox.yahoo.com/
+
+https://code.google.com/p/open-advertising-dataset/

@@ -1,0 +1,174 @@
+\documentclass[a4paper,12pt]{article}
+
+\usepackage[T1]{fontenc}        % cleaner font
+\usepackage[utf8]{inputenc}     % UTF-8 support
+\usepackage{amsmath}            % more math symbols
+\usepackage{amssymb}            % allow math symbols of form \mathbb{...}
+\usepackage{graphicx}           % enhanced graphics support
+\usepackage{epstopdf}           % automagically turn eps to pdf, for gnuplot
+\usepackage{subcaption}         % subfigure support
+\usepackage[dvipsnames]{xcolor} % syntax coloring support
+\usepackage{listings}           % programming language support
+\usepackage{algorithmic}        % pseudocode support
+\usepackage{algorithm}
+\usepackage{cancel}             % cancel out terms in division
+\usepackage{parskip}            % enable spacing between paragraphs
+\usepackage{cases}              % enable math function definitions with cases
+\usepackage{titling}            % allow adjustment of document title
+\usepackage{fullpage}           % 1 inch margins
+\usepackage{bm}                 % bold math fonts for vectors and stuff
+\usepackage{nicefrac}           % Nicer looking fractions
+\usepackage{floatflt}           % Allows text to float around figures / tables
+\usepackage{hyperref}           % Clickable references, citations etc
+\usepackage{framed}             % create framed, shaded or highlighted regions
+\usepackage[
+abbreviate=false,
+backend=biber,
+sortcites=true,
+sorting=nyt,
+sortlocale=en_US,
+style=numeric-verb,
+maxnames=10
+]{biblatex}                     % Bibliography support
+
+%\usepackage[finnish]{babel}    % use Finnish for hyphenation
+%\usepackage{color}             % colored text?
+
+% Adjust title vertical position
+\setlength{\droptitle}{-2cm}
+
+% Set up syntax highlighting for programming languages
+\lstloadlanguages{Ruby}
+\lstset{%
+basicstyle=\ttfamily\bfseries\footnotesize,
+commentstyle = \ttfamily\color{orange},
+keywordstyle=\ttfamily\color{blue},
+stringstyle=\color{red},
+showstringspaces=false,
+frame=trbl,
+}
+
+% Custom probability macros
+\def\ci{\perp\!\!\!\perp}              % Independence symbol
+\newcommand{\jpr}[2]{P(#1 \, , \, #2)} % Joint probability
+\newcommand{\cpr}[2]{P(#1 \, | \, #2)} % Conditional probability
+
+% Custom topological macros
+\newcommand\opn{\mathrel{\ooalign{$\subset$\cr        % open set \opn
+  \hidewidth\hbox{$\circ\mkern.5mu$}\cr}}}
+\newcommand\cls{\mathrel{\ooalign{$\subset$\cr        % closed set \cls
+  \hidewidth\raise.225ex\hbox{$\text{{\scriptsize c}}\mkern2mu$}\cr}}}
+
+% Custom handy macros for tuples and sets in maths
+\newcommand{\setof}[1]{\ensuremath{\left \{ #1 \right \}}}
+\newcommand{\tuple}[1]{\ensuremath{\left \langle #1 \right \rangle }}
+
+% Finnish-style limits after integration symbol (by Martti Nikunen)
+\newcommand{\vii}{\mathop{\Big/}}
+\newcommand{\viiva}[2]{\vii\limits_{\!\!\!\!{#1}}^{\>\,{#2}}}
+
+% Configure bibliography database
+\bibliography{sources.bib}
+
+\begin{document}
+
+\title{Reinforcement learning setting}
+\author{Eric Andrews}
+
+\maketitle
+
+\subsection*{Trials}
+A series of trials is a user's page visits on the site during a single session.
+
+\subsection*{Agent = advertisement system}
+The agent is the advertisement system that decides which ad to show to the
+user.
+
+\subsection*{Actions = showing advertisements}
+After each trial the agent, or the advertisement system, may show a single
+advertisement to the user. The reward of this action is modeled by a
+probability density function conditioned on "interest keywords". What I mean
+with this, is that if the advertisement's target interests align with those of
+the user's interest, the probability of receiving a high reward is high. If
+there are really no aligning interests, then zero reward is given.
+
+In the worst case, showing a mismatching ad can result in the user prematurely
+leaving the site, signaled by a negative reward.
+
+This reward can be thought of as whether or not the user clicks on the ad, and
+given that he/she does, how much "time/money/interest" does she spend on that
+"site".
+
+
+\subsection*{States = information gathered on user}
+The state represents a collection of information gathered on the user
+during his/her visit on the site. It is essentially a table with "interest
+keywords" linked to the amount of time a user has spent on pages containing
+those keywords, the click ratio of ads unde
+
+\subsection*{Transitions}
+
+\printbibliography
+
+\end{document}
+
+% ---- EXAMPLES BELOW ----
+
+% -- Example of figure for imagename.eps
+% \begin{figure}
+%     \includegraphics[scale=0.5]{imagename}
+%     \caption*{Caption be here.}
+% \end{figure}
+
+% -- Example of floating figure for imagename.eps
+% \begin{floatingfigure}[r]{0.49\textwidth}
+%   \includegraphics[scale=0.31]{imagename}
+%   \caption*{Caption be here.}
+% \end{floatingfigure}
+
+% -- Example of two figures side-by-side
+% \begin{figure}[h]
+%   \centering
+%   \begin{subfigure}{.5\textwidth}
+%     \centering
+%     \includegraphics[width=.9\linewidth]{fig1.eps}
+%     \caption*{Caption here}
+%   \end{subfigure}%
+%   \begin{subfigure}{.5\textwidth}
+%     \centering
+%     \includegraphics[width=.9\linewidth]{fig2.eps}
+%     \caption*{Caption be here}
+%   \end{subfigure}
+%   \caption{Shared caption}
+%   \label{fig:fighere}
+% \end{figure}
+
+% -- Remove pagination
+% \thispagestyle{empty}
+% \pagestyle{empty}
+
+% -- Example of code listing
+%\lstinputlisting[language=Ruby, caption={file.rb}]{./file.rb}
+
+% -- Example of cases-environment
+% $$
+% f(x) =
+% \begin{cases}
+%     x^2 & \text{if } x > 0 \\
+%     0 & \text{otherwise } \\
+% \end{cases}
+% $$
+
+% -- Multiletter variables in math mode
+%$$
+%  \textit{WM}
+%$$
+
+% -- Example of multicolumn row in tabular environment
+% \multicolumn{3}{|c|}{Cell spanning three columns}
+%
+% -- Add a vertical black bar left to text
+% \begin{leftbar}
+%   This is some text here.
+%   Some more text as well.
+% \end{leftbar}
