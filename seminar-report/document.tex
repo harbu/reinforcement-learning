@@ -1,0 +1,118 @@
+\documentclass{article} % For LaTeX2e
+\usepackage{nips13submit_e,times}
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage[
+abbreviate=false,
+backend=biber,
+sortcites=true,
+sorting=nyt,
+sortlocale=en_US,
+style=numeric-verb,
+maxnames=10
+]{biblatex}                     % Bibliography support
+
+\title{Contextual Bandit and Reinforcement Learning Approaches to Targeted
+Advertising}
+
+
+\author{
+Eric Andrews \\
+Seminar: Reinforcement Learning, Spring 2014 \\
+Department of Computer Science, University of Helsinki\\\\
+}
+
+% The \author macro works with any number of authors. There are two commands
+% used to separate the names and addresses of multiple authors: \And and \AND.
+%
+% Using \And between authors leaves it to \LaTeX{} to determine where to break
+% the lines. Using \AND forces a linebreak at that point. So, if \LaTeX{}
+% puts 3 of 4 authors names on the first line, and the last on the second
+% line, try using \AND instead of \And before the third author name.
+
+\newcommand{\fix}{\marginpar{FIX}}
+\newcommand{\new}{\marginpar{NEW}}
+
+
+\nipsfinalcopy % Uncomment for camera-ready version
+
+\bibliography{sources.bib}
+\begin{document}
+
+
+\maketitle
+
+\begin{abstract}
+  TODO
+\end{abstract}
+
+\section{Introduction}
+
+In an age where a huge amount of information and news can be found
+free-of-charge online, many content producers on the Internet rely on
+advertisement revenues to fund their operations. Often this advertisement is
+deployed in the form of clickable banner ads, either textual, graphical,
+animated or even interactive content, usually separated from the main content,
+and designed to attract the interest of visitors. When a visitor clicks such a
+banner, they are redirected to the advertiser's site, and the content producer
+is financially compensated for the referral.
+
+In this kind of advertising, it is the interest of the content producer to
+maximize click-through rate (CTR) of the banner ads: the number of times
+clicked divided by the number of times shown. If a content producer has several
+ad banners it could show to the user, one strategy could be just to fill up the
+web site with ads. However this quickly leads to user annoyance, and in the
+worst scenario, causes users to leave the site. Also the effectiveness of the
+advertisements starts to wither as more slots for banners are introduced.
+
+An alternative strategy is to recognize that there is a limit to the number of
+viable banner slots, and attempt to somehow selectively choose the ads to show
+according to whom the ad is being displayed to. This is called \emph{targeted
+advertising}. By adding some intelligence, we can attempt to show the user
+advertisements he or she could potentially be interested in instead of just
+uniformly picking one out of a bunch.
+
+% TODO: use of term: targeted advertising vs. behavioral targeting
+
+% TODO: an clump of unsubstantiated claims; find some sources...
+
+
+\begin{itemize}
+  \item
+  A summary of the approaches considered in this paper.
+  \item
+  Other approaches, prior research..
+  \item
+  Related stuff (information retrieval, real-time bidding strategies)
+\end{itemize}
+
+\section{Approaches}
+
+\subsection{Contextual bandit}
+
+\begin{itemize}
+  \item{Introduce the contextual $n$-arms bandit problem.}
+  \item{Discuss UCB, Thompson sampling, (and fully Bayesian approaches?)}
+  \item{Mortal multi-armed bandits: old arms (ads) are removed and new ones
+    born.}
+  \item{Real world empirical results}
+\end{itemize}
+
+\subsection{Reinforcement learning}
+
+\begin{itemize}
+  \item{Introduce the referencement learning setting: MDP, value-functions
+    etc.}
+  \item{Introduce TD-learning and TD($\lambda$)-learning algorithms.}
+  \item{Introduce concurrent reinforcement learning.}
+\end{itemize}
+
+\section{Conclusions}
+
+\subsubsection*{References}
+\nocite{*}
+
+\printbibliography[heading=none]
+
+
+\end{document}
