@@ -18,7 +18,7 @@ Advertising}
 
 \author{
 Eric Andrews \\
-Seminar: Reinforcement Learning, Spring 2014 \\
+Seminar: Reinforcement Learning and Its Applications, Spring 2014 \\
 Department of Computer Science, University of Helsinki\\\\
 }
 
@@ -62,24 +62,33 @@ maximize click-through rate (CTR) of the banner ads: the number of times
 clicked divided by the number of times shown. If a content producer has several
 ad banners it could show to the user, one strategy could be just to fill up the
 web site with ads. However this quickly leads to user annoyance, and in the
-worst scenario, causes users to leave the site. Also the effectiveness of the
-advertisements starts to wither as more slots for banners are introduced.
+worst scenario, causes users to leave the site. Further, the effectiveness of
+the advertisements starts to wither as more slots for banners are introduced.
 
 An alternative strategy is to recognize that there is a limit to the number of
 viable banner slots, and attempt to somehow selectively choose the ads to show
-according to whom the ad is being displayed to. This is called \emph{targeted
-advertising}. By adding some intelligence, we can attempt to show the user
-advertisements he or she could potentially be interested in instead of just
-uniformly picking one out of a bunch.
+according to whom the ad is being displayed to. This is often referred to as
+\emph{targeted advertising} or \emph{behavioral targeting}. By adding some
+intelligence, we can attempt to show the user advertisements he or she could
+potentially be interested in instead of just uniformly picking one out of a
+bunch.
 
 % TODO: use of term: targeted advertising vs. behavioral targeting
 
 % TODO: an clump of unsubstantiated claims; find some sources...
 
+This paper will introduce two approaches to targeted advertising. First the
+simpler, (contextual) multi-armed bandits model will be explored in some
+detail. It is the classic example through which the exploration vs.
+exploitation trade-off has been studied. We will also delve into some
+modifications of the model that are useful in this setting of banner ad
+selection. After going through this simple model, a more complex approach
+called reinforcement learning will be considered. This approach allows us to
+take into consideration situtations where the agent, the ad system, can affect
+the state of the user, e.g. make them annoyed so that they leave the site.
+
 
 \begin{itemize}
-  \item
-  A summary of the approaches considered in this paper.
   \item
   Other approaches, prior research..
   \item
@@ -91,6 +100,7 @@ uniformly picking one out of a bunch.
 \subsection{Contextual bandit}
 
 \begin{itemize}
+  \item{Exploration / exploitation}
   \item{Introduce the contextual $n$-arms bandit problem.}
   \item{Discuss UCB, Thompson sampling, (and fully Bayesian approaches?)}
   \item{Mortal multi-armed bandits: old arms (ads) are removed and new ones
