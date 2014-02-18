@@ -97,8 +97,8 @@ the state of the user, e.g. make them annoyed so that they leave the site.
 
 \section{Approaches}
 
-\subsection{Contextual bandit}
 
+\subsection{Contextual bandit}
 \begin{itemize}
   \item{Exploration / exploitation}
   \item{Introduce the contextual $n$-arms bandit problem.}
@@ -107,6 +107,14 @@ the state of the user, e.g. make them annoyed so that they leave the site.
     born.}
   \item{Real world empirical results}
 \end{itemize}
+
+In the standard $n$-armed bandit problem, we are facing a slot machine with
+$n$ levers. Each lever is associated with some distinct probability distrubtion
+that determines the amount of reward we get from pulling that lever. Assuming
+that pulling a lever is free but that we have a limited number of pulls, how to
+we maximize the expected total reward given that we don't know the underlying
+distributions? \cite{book}
+
 
 \subsection{Reinforcement learning}
 
