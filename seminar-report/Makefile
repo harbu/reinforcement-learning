@@ -16,3 +16,4 @@ bib:
 
 clean:
 	rm -f *.aux *.log *.toc *.blg *.bbl *~ *-eps-converted-to.pdf document.pdf *.bcf *.run.xml
+	rm -f document.out

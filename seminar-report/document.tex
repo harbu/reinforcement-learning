@@ -62,12 +62,15 @@ banner, they are redirected to the advertiser's site, and the content producer
 is financially compensated for the referral.
 
 In this kind of advertising, it is the interest of the content producer to
-maximize click-through rate (CTR) of the banner ads: the number of times
-clicked divided by the number of times shown. If a content producer has several
-ad banners it could show to the user, one strategy could be just to fill up the
-web site with ads. However this can quickly lead to user annoyance, and in the
-worst scenario, cause users to leave the site. Further, the effectiveness of
-the advertisements starts to wither as more slots for banners are introduced.
+maximize \emph{click-through rate} (CTR) of the banner ads: the number of times
+clicked divided by \emph{impressions}, the number of times shown. If a content
+producer has several ad banners it could show to the user, one strategy could
+be just to fill up the web site with ads. However this can quickly lead to user
+annoyance, and in the worst scenario, cause users to leave the site. Further,
+the effectiveness of the advertisements starts to wither as more slots for
+banners are introduced, either because a saturation point is hit where users
+learn to ignore most of the banners, or there simply isn't room for more
+banners on the page.
 
 An alternative strategy is to recognize that there is a limit to the number of
 viable banner slots, and attempt to somehow selectively choose the ads to show
@@ -81,6 +84,8 @@ bunch.
 
 % TODO: an clump of unsubstantiated claims; find some sources...
 
+% TODO: banner blindness, saturation
+
 This paper introduces two approaches to targeted advertising. First the
 simpler, multi-armed bandit model is explored in some detail. It is the classic
 example through which the exploration vs.  exploitation trade-off has been
@@ -91,33 +96,60 @@ approach allows us to take into consideration situations in which the agent,
 the ad system, can affect the state of the user, e.g. make them annoyed so that
 they leave the site.
 
+\section{Related work}
 
-\begin{itemize}
-  \item
-  Other approaches, prior research..
-  \item
-  Related stuff (information retrieval, real-time bidding strategies)
-\end{itemize}
+Other approaches to targeted advertising have been explored as well. Chen et
+al. \cite{chen2009large} consider a Poisson regression model to predict
+click-through rates from user history.  They applied their large-scale
+parallelized approach to Yahoo's user base which resulted in great improvement
+in CTR.
+
+Work in information retrieval may be applied to targeted advertising as well.
+For example personalized news recommendation is in some sense a very similar
+problem, albeit from a different viewpoint. \emph{Contextual advertising} is
+also concerned with selecting banner ads intelligently, but instead of
+targeting the user, the ad is chosen according to the content being served to
+the user.
+
+A different but domain-related topic is learning strategies for
+\emph{real-time bidding}. Currently web sites can sell ads for banner slots at
+an extremely granular level: a single impression. When a user visits a site, a
+few hundred millisecond auction is held, in which the advertisers name their
+price given the profile of the visiting user. When the time is up, the highest
+bidder gets their ad on the site. There have been studies on optimal strategies
+for maximizing profits (i.e. balancing ad click-rate and cost) from the
+viewpoint of the advertiser with \cite{ding2013multi} and without
+\cite{chakraborty2010selective} the multi-armed bandit model. In any case, the
+exploration vs exploitation dilemma is highlighted in this setting.
+
+% TODO: more prior research
+
 
 \section{Approaches}
+
+Depending upon what kind of aspects of the problem we wish to take into
+consideration, we may either consider targeted advertising through the simpler
+bandit approach, or, the more complex full reinforcement learning approach. The
+first approach is limited to immediate rewards while the second can learn from
+delayed rewards, i.e. rewards that aren't necessarily received immediately
+after performing an action \cite{silver2013concurrent}. The reinforcement
+learning approach can also capture effects the ad displayer (the agent) has
+on the user (the state), for example user attrition caused by an offensive ad.
+
+% Why important the above?
 
 
 \subsection{Contextual bandit}
 \begin{itemize}
-  \item{Exploration / exploitation}
-  \item{Introduce the contextual $n$-arms bandit problem.}
   \item{Discuss UCB, Thompson sampling, (and fully Bayesian approaches?)}
-  \item{Mortal multi-armed bandits: old arms (ads) are removed and new ones
-    born.}
-  \item{Real world empirical results}
 \end{itemize}
 
 In the standard $n$-armed bandit problem, we are facing a slot machine with $n$
 levers. Each lever is associated with some distinct probability distribution
 that determines the amount of reward received from pulling that lever. Assuming
-that pulling a lever is free but that we have a limited number of pulls, how to
-we maximize the expected total reward given that we don't know the underlying
-distributions? \cite{book}
+that pulling a lever is free, but that we have a limited number of pulls, how
+to we maximize the expected total reward given that we don't know the
+underlying distributions? \cite{book}
 
 In the above situation, the \emph{exploration vs. exploitation} dilemma is
 highlighted. After playing for a bit, we may get a sense that some lever has
@@ -131,6 +163,7 @@ We are especially interested in a generalization of the $n$-armed bandit
 problem, namely the \emph{contextual multi-armed bandit}
 \cite{langford2007epoch}, in which we receive some side-information, a context,
 before having to choose the lever to pull. The setting has been outlined below.
+
 \begin{itemize}
   \item[]
     \textbf{For} $t = 1, ..., T$ (rounds)
@@ -143,18 +176,92 @@ before having to choose the lever to pull. The setting has been outlined below.
 
 It should be stated that even though at first glance, the multi-armed bandit
 may seem like a very contrived problem, it is actually a very general
-framework. In the case of targeted advertising, we can think of it as follows.
-The agent making the decisions is the website. The levers to pull are all the
-possible ads that can be shown in some banner slot. The reward received is 1 if
-a user clicks the ad and 0 otherwise. The context is some information gathered
-on the user, e.g. what pages they have visited, gender, interests, age and so
-on.
+framework. In the case of targeted advertising, one way to adapt to this model
+is as follows.  The agent making the decisions is the website. The levers to
+pull are all the possible ads that can be shown in a banner slot. The reward
+received is 1 if a user clicks the ad, and 0 otherwise. The context is some
+information gathered on the user, e.g. what pages they have visited, gender,
+interests, age and so on.
+
+\subsubsection{Thompson sampling}
+\subsubsection{Mortal bandits}
+
+Most often in online advertisement, the ads (the levers) have a limited
+lifespans due to limited budgets, seasonal holiday campaigns, and other
+uncontrollable factors. On the other hand, new levers are introduced
+occasionally in the form of new ad campaigns. This results in a stark
+contradiction between reality and our mode, because the multi-armed bandit
+model assumes implicitly that its levers are in existence indefinitely
+\cite{chakrabarti2008mortal}.
+
+Chakrabarti et al. \cite{chakrabarti2008mortal} introduce algorithms for mortal
+multi-armed bandits, a model in which levers regularly die and new ones come to
+existence as replacements. One of the main results they derive is that the
+regret bounds for such a situation can not be as low as for the non-mortal
+case. Instead of $O(\ln t)$, a bound of $\Omega(t)$ is achieved under
+mortality, $t$ being the number of rounds.
+
+One of the main reasons for the worse bound is that in the non-mortal scenario,
+after finding an optimal arm, the algorithm can thereafter concentrate on
+indefinite exploitation. When arms are subjected to lifetimes, such nonchalance
+is out of the question.  An especially challenging case arises when there are
+many levers and short lifespans. Most likely, one must settle for suboptimality
+in such a case.
+
+The paper \cite{chakrabarti2008mortal} also describes how standard multi-armed
+bandits can be adapted to take mortality into account. This is needed so that
+the algorithms don't spend too much time on exploration, an investment that is
+not justified under mortality. The idea of the \emph{subset heuristic} is to
+divide the rounds into epochs. At the dawn of each epoch, we choose a subset
+of arms uniformly at random from the set of all arms. We then run the standard
+multi-armed bandit algorithm on the subset until the end of the epoch.
+
+The classical, standard multi-armed algorithm, UCB1, is extended to allow for
+mortality. Whether or not the heuristic has been applied to contextual bandits
+and Thompson sampling is something the author of this seminar report couldn't
+find material on. However, on the surface, there seems to be no forbidding
+factors.
+
 
 
 \subsection{Reinforcement learning}
 
+Sometimes we may need an approach that captures more than what the $n$-armed
+bandits can offer. Reinforcement learning generalizes the scenario of $n$-armed
+bandits by considering a more inclusive model. We will first look at how the
+full reinforcement problem can be formulated as a Markov decision process. We
+will then examine some algorithms for learning optimal policies for these
+processes under additional challenges brought by the banner ad domain.
+
+
+\subsubsection{MDP}
+
+A Markov decision process (MDP) \cite{book} is a 4-tuple
+\begin{equation}
+  (S, A, \setof{P_a : S \times S \rightarrow [0,1] \,|\, a \in A},
+  \setof{R_a : S \times S \rightarrow \mathbb{R} \,|\, a \in A}).
+\end{equation}
+
+Above $S$ is a finite set of states. $A$ is a finite set of actions. Function
+$P_a(s, s')$ gives the probability of transitioning to state $s'$ after
+performing action $a$ in state $s$. The reward function $R_a : S \times S
+\rightarrow \mathbb{R}$ gives immediate reward obtain from performing action
+$a$ in state $s$ and ending up in $s'$.
+
+The simulation is started from an initial state $s_0$ at time 0. On each
+discrete time step $t$ we are in some state $s_t$, on the basis of which we
+must choose an action $a_t$, after which we are rewarded $r_t \in \mathbb{R}$,
+time $t$ is incremented by one, and we end up at state $s_{t+1}$
+\cite{abe2002empirical}.
+
+In the reinforcement learning setting, we don't know the transition
+probabilities $P_a$ or the reward functions $R_a$ in advance.
+
+\subsubsection{Direct, indirect and semi-direct reinforcement learning}
+\subsubsection{Concurrent reinforcement learning}
+
 \begin{itemize}
-  \item{Introduce the referencement learning setting: MDP, value-functions
+  \item{Introduce the reinforcement learning setting: MDP, value-functions
     etc.}
   \item{Introduce TD-learning and TD($\lambda$)-learning algorithms.}
   \item{Introduce concurrent reinforcement learning.}
