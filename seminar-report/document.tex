@@ -16,7 +16,7 @@ maxnames=10
 
 \newcommand{\setof}[1]{\ensuremath{\left \{ #1 \right \}}}
 
-\title{Contextual Bandit and Reinforcement Learning Approaches to Targeted
+\title{Multi-armed Bandits and Reinforcement Learning Approaches to Targeted
 Advertising}
 
 
@@ -245,25 +245,70 @@ A Markov decision process (MDP) \cite{book} is a 4-tuple
 Above $S$ is a finite set of states. $A$ is a finite set of actions. Function
 $P_a(s, s')$ gives the probability of transitioning to state $s'$ after
 performing action $a$ in state $s$. The reward function $R_a : S \times S
-\rightarrow \mathbb{R}$ gives immediate reward obtain from performing action
-$a$ in state $s$ and ending up in $s'$.
+\rightarrow \mathbb{R}$ gives the immediate reward obtained from performing
+action $a$ in state $s$ and ending up in $s'$.
 
-The simulation is started from an initial state $s_0$ at time 0. On each
-discrete time step $t$ we are in some state $s_t$, on the basis of which we
+The simulation is started from an initial state $s_0$ at time 0. During each
+discrete time step $t$, we are in some state $s_t$, on the basis of which we
 must choose an action $a_t$, after which we are rewarded $r_t \in \mathbb{R}$,
 time $t$ is incremented by one, and we end up at state $s_{t+1}$
-\cite{abe2002empirical}.
+\cite{abe2002empirical}. The task is called \emph{episodic} if there is end
+state, after which the simulation is restarted. Otherwise we call the task
+\emph{continuing} \cite{book}.
+
+The central problem here, then, is to find a (near) optimal policy $\pi$ for
+the agent performing the actions. Given we are in state $s_t \in S$, $\pi(s_t)$
+indicates the action $a_t$ that should be performed. This can be a probability
+distribution defined on set of all actions $A$. The optimal policy we wish to
+find is the one that maximizes the reward accumulated over time, put formally,
+maximizes $\sum_{t=0}^\infty R_{a_t}(s_t, s_{t+1})$, where $\gamma \in [0,1)$
+is the discount rate.
+
+% TODO: Prediction problem vs. Control problem
 
 In the reinforcement learning setting, we don't know the transition
-probabilities $P_a$ or the reward functions $R_a$ in advance.
+probabilities $P_a$ or the reward functions $R_a$ in advance. This entails that
+in order to find an optimal policy---solve the \emph{control problem}---we
+must also solve the \emph{prediction problem}, or in some sense, estimate the
+transition probabilities and rewards. We do this by means of estimating a value
+function.
+
+Given a policy $\pi$, the value function $Q^\pi(s,a)$ indicates the
+desirability of taking action $a$ in state $s$. The desirability is the
+expected value of the cumulative reward given that we start in state $s$ and
+take action $a$, after which we strictly follow policy $\pi$. The formulation
+is given below, in which $r_{t+k+1}$ denotes the reward procured during time
+$t+k+1$.
+
+\begin{equation}
+  Q^\pi(s,a) = E_\pi \big[ \sum_{k=0}^\infty \gamma^k r_{t+k+1} \;|\; s_t = s,
+  a_t = a\big],
+\end{equation}
+
+The value function $Q^*$ of an optimal policy $\pi^*$ satisfies the
+\emph{Bellman optimality equation},
+
+\begin{equation}
+  Q^*(s,a) = E\big[r_{t+1} \;|\; s_t = s, a_t = a\big]
+  + \gamma E\big[\max_{a'} Q^*(s_{t+1}, a') \;|\; s_t = s, a_t = a\big]
+\end{equation}
+
+The value function $Q$ implicitly characterizes a policy. The policy
+is to always choose the action that maximizes the value function, or, $\pi(s) =
+\arg\max_a Q(s,a)$. In the case of optimal value function $Q^*$, following this
+method leads to the optimal policy $\pi^*$ \cite{abe2002empirical}.
+
+
+%TODO: value function
 
 \subsubsection{Direct, indirect and semi-direct reinforcement learning}
+
 \subsubsection{Concurrent reinforcement learning}
 
 \begin{itemize}
-  \item{Introduce the reinforcement learning setting: MDP, value-functions
-    etc.}
-  \item{Introduce TD-learning and TD($\lambda$)-learning algorithms.}
+  \item{Motivate need for concurrent reinforcement learning in targeted
+    advertising.}
+  \item{Introduce TD($\lambda$)-learning algorithms.}
   \item{Introduce concurrent reinforcement learning.}
 \end{itemize}
 
