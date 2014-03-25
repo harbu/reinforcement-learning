@@ -1,8 +1,12 @@
 \documentclass{article} % For LaTeX2e
 \usepackage{nips13submit_e,times}
+\usepackage{graphicx}
 \usepackage{hyperref}
 \usepackage{amsmath}
+\usepackage{subcaption}
 \usepackage{amssymb}
+\usepackage{algorithm}
+\usepackage[noend]{algpseudocode}
 \usepackage{url}
 \usepackage[
 abbreviate=false,
@@ -187,14 +191,105 @@ information gathered on the user, e.g. what pages they have visited, gender,
 interests, age and so on.
 
 \subsubsection{Thompson sampling}
-Thompson sampling is an algorithm to address the exploitation vs. exploration
-trade-off in the contextual multi-armed bandit case. The idea is that we have a
-probability distribution on the arms denoting the probability that each is
-optimal. In each round, we sample this distribution so as to choose the next
-lever to pull. The distribution is then updated according to the rewards
-experienced.
+Thompson sampling \cite{chapelle2011empirical} is an algorithm to address the
+exploitation vs. exploration trade-off in the contextual multi-armed bandit
+case. The idea is that we have a probability distribution on the arms denoting
+the probability that each is optimal. In each round, we sample this
+distribution so as to choose the next lever to pull. The distribution is then
+updated according to the rewards experienced.
 
-The approach is Bayesian, but not fully Bayesian like the Gittins
+Thompson sampling can be understood in the Bayesian context as follows. Denote
+previous observations of contexts, pulls and rewards as $D = \setof{(x_i, a_i,
+r_i) \;|\; i \in \mathbb{N}}$. These are modeled using a likelihood function
+$P(r \;|\; a,x,\theta)$, where $\theta$ are some parameters. The posterior
+distribution of the parameters is given by the Bayes rule, namely $P(\theta |
+D) \propto \prod P(r_i | a_i, x_i, \theta) P(\theta)$, given prior $P(\theta)$.
+
+Assuming we knew the true parameters $\theta^*$, we would ideally choose the
+lever that maximizes expected reward $\arg\max_a E[r | a, x, \theta^*]$. In
+reality we don't know the true parameters. Instead, we must integrate over the
+domain of the parameters $\theta$, obtaining $\arg\max_a \int E[r | a, x,
+\theta] P(\theta|D) d\theta$. However this corresponds to only exploitation.
+
+Taking exploration into consideration as well, the following equation is
+obtained: the probability of choosing to perform pull $a$ is given by
+\begin{equation}
+  \int \mathbb{I}\bigg[E[r|a,x,\theta] = \max_{a'}
+  E\big[r|a',x,\theta\big]\bigg] P(\theta | D) d\theta
+\end{equation}
+
+This integral isn't directly computed, instead Algorithm~\ref{alg:thompson} is
+used to the same effect.
+
+\begin{algorithm}
+  \caption{Thompson sampling \cite{chapelle2011empirical}}
+  \label{alg:thompson}
+  \begin{algorithmic}[1]
+    \State $D := \emptyset$
+    \For{$t=1,...,T$}
+      \State Receive context $x_t$.
+      \State Draw $\theta^t$ according to $P(\theta | D)$.
+      \State Select $a_t := \arg\max_a E[r | x_t, a, \theta^t]$.
+      \State Observe reward $r_t$.
+      \State $D = D \cup (x_t, a_t, r_t)$.
+    \EndFor
+  \end{algorithmic}
+\end{algorithm}
+
+Let's illustrate this idea with the help of an example. Assume the standard
+$n$-armed bandits situation, in which each lever $i \in [1,n]$ is distributed
+according to a Bernoulli distribution with success probability $\theta^*_i$.
+For each arm $i$, we maintain a separate Beta distribution modeling our belief
+of what the arm's success probability is. In mathematical terms, if $X_i$ is
+the random variable corresponding to the reward received (0 or 1) from pulling
+the $i$:th lever, then $X_i \sim \text{Bernoulli}(\theta^*_i)$  and we estimate
+$E[X_i] \sim \text{Beta}(S_i + 1, F_i + 1)$, where $S_i$ is the number of
+successes and $F_i$ is the number of failures observed so far for the $i$:th
+arm.
+
+This example is applied as Algorithm~\ref{alg:thompson} thusly. We initialize
+$S_i := F_i := 0$ for all arms. Line 3 can be ignored because we are not
+considering context. Line 4 is performed so that each arm's Beta distribution
+is sampled.  The arm with the largest sample is pulled, and its respective
+success or failure counter is updated after receiving the reward.
+
+How a beta distribution, conveying our belief on success probability for an
+arm, can look like, is illustrated in Figure~\ref{fig:beta}.
+Figure~\ref{fig:beta1} is the initial situation when anything yet is to be
+observed. Say we observe 8 ones and 2 zeros. The distribution will be as in
+Figure~\ref{fig:beta2}---tilted towards success. The contrary situation can be
+seen in Figure~\ref{fig:beta3}, where 2 successes and 4 failures have been
+observed. The tilt is slighter, because the observations don't just yet justify
+ruling out the large values.
+
+\begin{figure}
+  \centering
+  \begin{subfigure}{.30\textwidth}
+    \centering
+    \includegraphics[width=.9\linewidth]{beta1.pdf}
+    \caption{Initial situation.}
+    \label{fig:beta1}
+  \end{subfigure}%
+  \begin{subfigure}{.30\textwidth}
+    \centering
+    \includegraphics[width=.9\linewidth]{beta2.pdf}
+    \caption{After observing many more successes than failures.}
+    \label{fig:beta2}
+  \end{subfigure}%
+  \begin{subfigure}{.30\textwidth}
+    \centering
+    \includegraphics[width=.9\linewidth]{beta3.pdf}
+    \caption{After observing slightly more failures than successes.}
+    \label{fig:beta3}
+  \end{subfigure}
+  \caption{Illustration on what the distribution modeling the success
+  probability of a Bernoulli distribution can look like.}
+  \label{fig:beta}
+\end{figure}
+
+
+
+While the approach is Bayesian, it is not fully Bayesian like the Gittins
 index, which although is Bayes-optimal, can't be implemented efficiently in
 practice \cite{chapelle2011empirical}. The downside of Thompson sampling is
 that there is a lack of theoretical analysis. Chapelle et al.
