@@ -122,6 +122,12 @@ viewpoint of the advertiser with \cite{ding2013multi} and without
 \cite{chakraborty2010selective} the multi-armed bandit model. In any case, the
 exploration vs exploitation dilemma is highlighted in this setting.
 
+The quite recent field of applying computer science to ad selection goes under
+the umbrella term \emph{computational advertising}. Especially software
+corporations Microsoft and Yahoo conduct applied research in this field, while
+the National Institute of Statistical Science (NISS) held a workshop on the
+topic in 2009. % wikipedia
+
 % TODO: more prior research
 
 
@@ -140,9 +146,6 @@ on the user (the state), for example user attrition caused by an offensive ad.
 
 
 \subsection{Contextual bandit}
-\begin{itemize}
-  \item{Discuss UCB, Thompson sampling, (and fully Bayesian approaches?)}
-\end{itemize}
 
 In the standard $n$-armed bandit problem, we are facing a slot machine with $n$
 levers. Each lever is associated with some distinct probability distribution
@@ -184,8 +187,22 @@ information gathered on the user, e.g. what pages they have visited, gender,
 interests, age and so on.
 
 \subsubsection{Thompson sampling}
-\subsubsection{Mortal bandits}
+Thompson sampling is an algorithm to address the exploitation vs. exploration
+trade-off in the contextual multi-armed bandit case. The idea is that we have a
+probability distribution on the arms denoting the probability that each is
+optimal. In each round, we sample this distribution so as to choose the next
+lever to pull. The distribution is then updated according to the rewards
+experienced.
 
+The approach is Bayesian, but not fully Bayesian like the Gittins
+index, which although is Bayes-optimal, can't be implemented efficiently in
+practice \cite{chapelle2011empirical}. The downside of Thompson sampling is
+that there is a lack of theoretical analysis. Chapelle et al.
+\cite{chapelle2011empirical}, however, demonstrate empirically that it
+outperforms UCB and $\epsilon$-greedy methods in certain cases.
+% TODO: what cases?
+
+\subsubsection{Mortal bandits}
 Most often in online advertisement, the ads (the levers) have a limited
 lifespans due to limited budgets, seasonal holiday campaigns, and other
 uncontrollable factors. On the other hand, new levers are introduced
@@ -298,8 +315,14 @@ is to always choose the action that maximizes the value function, or, $\pi(s) =
 \arg\max_a Q(s,a)$. In the case of optimal value function $Q^*$, following this
 method leads to the optimal policy $\pi^*$ \cite{abe2002empirical}.
 
-
 %TODO: value function
+
+The standard multi-armed bandit can be viewed as a Markov decision process in
+which there is exactly one state. The levers of the bandit are all the possible
+actions, and performing an action always brings you back to the initial state.
+The contextual bandit model does have different states, but the action chosen
+doesn't impact the choice of the next state.
+
 
 \subsubsection{Direct, indirect and semi-direct reinforcement learning}
 
@@ -311,6 +334,9 @@ method leads to the optimal policy $\pi^*$ \cite{abe2002empirical}.
   \item{Introduce TD($\lambda$)-learning algorithms.}
   \item{Introduce concurrent reinforcement learning.}
 \end{itemize}
+
+
+\subsection{Function approximation}
 
 \section{Conclusions}
 
