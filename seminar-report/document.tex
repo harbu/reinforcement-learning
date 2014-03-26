@@ -302,7 +302,7 @@ Most often in online advertisement, the ads (the levers) have a limited
 lifespans due to limited budgets, seasonal holiday campaigns, and other
 uncontrollable factors. On the other hand, new levers are introduced
 occasionally in the form of new ad campaigns. This results in a stark
-contradiction between reality and our mode, because the multi-armed bandit
+contradiction between reality and our model, because the multi-armed bandit
 model assumes implicitly that its levers are in existence indefinitely
 \cite{chakrabarti2008mortal}.
 
@@ -432,6 +432,26 @@ doesn't impact the choice of the next state.
 
 
 \subsection{Function approximation}
+Almost all the implementations \cite{abe2002empirical, silver2013concurrent,
+chapelle2011empirical} of targeted advertising considered in this seminar
+report required some sort of function approximation, regardless of whether they
+were bandit or reinforcement based.
+
+In real world (advertisement) data there tends to be a huge amount of features,
+which means that if we treat the state space of the reinforcement learning
+problem as the feature space, we get a huge explosion in the number of states
+\cite{abe2002empirical}.  This means that most likely the reinforcement
+learning will not know to behave desirably in never-before-seen states
+\cite{book}.
+
+TODO:
+\begin{itemize}
+  \item{Define function approximation precisely: "We estimate and represent the
+    value function as a function of state features and actions"}
+  \item{Relation to supervised machine learning.}
+  \item{In my examples: multivariate linear regression}
+\end{itemize}
+
 
 \section{Conclusions}
 
