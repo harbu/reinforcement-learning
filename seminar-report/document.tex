@@ -295,6 +295,7 @@ practice \cite{chapelle2011empirical}. The downside of Thompson sampling is
 that there is a lack of theoretical analysis. Chapelle et al.
 \cite{chapelle2011empirical}, however, demonstrate empirically that it
 outperforms UCB and $\epsilon$-greedy methods in certain cases.
+
 % TODO: what cases?
 
 \subsubsection{Mortal bandits}
@@ -334,6 +335,9 @@ and Thompson sampling is something the author of this seminar report couldn't
 find material on. However, on the surface, there seems to be no forbidding
 factors.
 
+% TODO: how to apply to contextual bandit.
+% TODO: empirical results
+
 
 
 \subsection{Reinforcement learning}
@@ -364,7 +368,7 @@ The simulation is started from an initial state $s_0$ at time 0. During each
 discrete time step $t$, we are in some state $s_t$, on the basis of which we
 must choose an action $a_t$, after which we are rewarded $r_t \in \mathbb{R}$,
 time $t$ is incremented by one, and we end up at state $s_{t+1}$
-\cite{abe2002empirical}. The task is called \emph{episodic} if there is end
+\cite{abe2002empirical}. The task is called \emph{episodic} if there is an end
 state, after which the simulation is restarted. Otherwise we call the task
 \emph{continuing} \cite{book}.
 
@@ -373,10 +377,8 @@ the agent performing the actions. Given we are in state $s_t \in S$, $\pi(s_t)$
 indicates the action $a_t$ that should be performed. This can be a probability
 distribution defined on set of all actions $A$. The optimal policy we wish to
 find is the one that maximizes the reward accumulated over time, put formally,
-maximizes $\sum_{t=0}^\infty R_{a_t}(s_t, s_{t+1})$, where $\gamma \in [0,1)$
-is the discount rate.
-
-% TODO: Prediction problem vs. Control problem
+maximizes $\sum_{t=0}^\infty \gamma^t R_{a_t}(s_t, s_{t+1})$, where $\gamma \in
+[0,1)$ is the discount rate.
 
 In the reinforcement learning setting, we don't know the transition
 probabilities $P_a$ or the reward functions $R_a$ in advance. This entails that
@@ -405,12 +407,12 @@ The value function $Q^*$ of an optimal policy $\pi^*$ satisfies the
   + \gamma E\big[\max_{a'} Q^*(s_{t+1}, a') \;|\; s_t = s, a_t = a\big]
 \end{equation}
 
-The value function $Q$ implicitly characterizes a policy. The policy
-is to always choose the action that maximizes the value function, or, $\pi(s) =
-\arg\max_a Q(s,a)$. In the case of optimal value function $Q^*$, following this
-method leads to the optimal policy $\pi^*$ \cite{abe2002empirical}.
+A value function $Q$ implicitly characterizes a policy. The policy is to always
+choose the action that maximizes the value function, or, $\pi(s) = \arg\max_a
+Q(s,a)$. In the case of optimal value function $Q^*$, following this method
+leads to the optimal policy $\pi^*$ \cite{abe2002empirical}.
 
-%TODO: value function
+%TODO: more on value function?
 
 The standard multi-armed bandit can be viewed as a Markov decision process in
 which there is exactly one state. The levers of the bandit are all the possible
