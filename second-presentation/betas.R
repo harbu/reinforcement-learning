@@ -1,0 +1,67 @@
+xs <- seq(0,1,0.001)
+
+pdf("b1.pdf")
+par(mfrow=c(2,3))
+plot(xs, dbeta(xs, 1, 1), lwd=2, col="blue", t="l", main=expression(a[1]), xlab="x", ylab="density", cex.main=1.5)
+plot(xs, dbeta(xs, 1, 1), lwd=2, col="blue", t="l", main=expression(a[2]), xlab="x", ylab="density", cex.main=1.5)
+plot(xs, dbeta(xs, 1, 1), lwd=2, col="blue", t="l", main=expression(a[3]), xlab="x", ylab="density", cex.main=1.5)
+
+plot(xs, dbeta(xs, 1, 1), lwd=2, col="red", t="l", main=expression(a[1]), xlab="x", ylab="density", cex.main=1.5)
+plot(xs, dbeta(xs, 1, 1), lwd=2, col="red", t="l", main=expression(a[2]), xlab="x", ylab="density", cex.main=1.5)
+plot(xs, dbeta(xs, 1, 1), lwd=2, col="red", t="l", main=expression(a[3]), xlab="x", ylab="density", cex.main=1.5)
+dev.off()
+
+pdf("b2.pdf")
+par(mfrow=c(2,3))
+plot(xs, dbeta(xs, 1, 1), lwd=2, col="blue", t="l", main=expression(a[1]), xlab="x", ylab="density", cex.main=1.5)
+plot(xs, dbeta(xs, 1, 1), lwd=2, col="blue", t="l", main=expression(a[2]), xlab="x", ylab="density", cex.main=1.5)
+plot(xs, dbeta(xs, 1, 2), lwd=2, col="blue", t="l", main=expression(a[3]), xlab="x", ylab="density", cex.main=1.5)
+
+plot(xs, dbeta(xs, 1, 1), lwd=2, col="red", t="l", main=expression(a[1]), xlab="x", ylab="density", cex.main=1.5)
+plot(xs, dbeta(xs, 1, 1), lwd=2, col="red", t="l", main=expression(a[2]), xlab="x", ylab="density", cex.main=1.5)
+plot(xs, dbeta(xs, 1, 1), lwd=2, col="red", t="l", main=expression(a[3]), xlab="x", ylab="density", cex.main=1.5)
+dev.off()
+
+pdf("b3.pdf")
+par(mfrow=c(2,3))
+plot(xs, dbeta(xs, 1, 1), lwd=2, col="blue", t="l", main=expression(a[1]), xlab="x", ylab="density", cex.main=1.5)
+plot(xs, dbeta(xs, 1, 1), lwd=2, col="blue", t="l", main=expression(a[2]), xlab="x", ylab="density", cex.main=1.5)
+plot(xs, dbeta(xs, 1, 2), lwd=2, col="blue", t="l", main=expression(a[3]), xlab="x", ylab="density", cex.main=1.5)
+
+plot(xs, dbeta(xs, 1, 1), lwd=2, col="red", t="l", main=expression(a[1]), xlab="x", ylab="density", cex.main=1.5)
+plot(xs, dbeta(xs, 2, 1), lwd=2, col="red", t="l", main=expression(a[2]), xlab="x", ylab="density", cex.main=1.5)
+plot(xs, dbeta(xs, 1, 1), lwd=2, col="red", t="l", main=expression(a[3]), xlab="x", ylab="density", cex.main=1.5)
+dev.off()
+
+pdf("b4.pdf")
+par(mfrow=c(2,3))
+plot(xs, dbeta(xs, 1, 1), lwd=2, col="blue", t="l", main=expression(a[1]), xlab="x", ylab="density", cex.main=1.5)
+plot(xs, dbeta(xs, 1, 1), lwd=2, col="blue", t="l", main=expression(a[2]), xlab="x", ylab="density", cex.main=1.5)
+plot(xs, dbeta(xs, 1, 2), lwd=2, col="blue", t="l", main=expression(a[3]), xlab="x", ylab="density", cex.main=1.5)
+
+plot(xs, dbeta(xs, 1, 1), lwd=2, col="red", t="l", main=expression(a[1]), xlab="x", ylab="density", cex.main=1.5)
+plot(xs, dbeta(xs, 4, 2), lwd=2, col="red", t="l", main=expression(a[2]), xlab="x", ylab="density", cex.main=1.5)
+plot(xs, dbeta(xs, 1, 1), lwd=2, col="red", t="l", main=expression(a[3]), xlab="x", ylab="density", cex.main=1.5)
+dev.off()
+
+pdf("b5.pdf")
+par(mfrow=c(2,3))
+plot(xs, dbeta(xs, 2, 2), lwd=2, col="blue", t="l", main=expression(a[1]), xlab="x", ylab="density", cex.main=1.5)
+plot(xs, dbeta(xs, 1, 1), lwd=2, col="blue", t="l", main=expression(a[2]), xlab="x", ylab="density", cex.main=1.5)
+plot(xs, dbeta(xs, 1, 3), lwd=2, col="blue", t="l", main=expression(a[3]), xlab="x", ylab="density", cex.main=1.5)
+
+plot(xs, dbeta(xs, 1, 1), lwd=2, col="red", t="l", main=expression(a[1]), xlab="x", ylab="density", cex.main=1.5)
+plot(xs, dbeta(xs, 4, 2), lwd=2, col="red", t="l", main=expression(a[2]), xlab="x", ylab="density", cex.main=1.5)
+plot(xs, dbeta(xs, 1, 1), lwd=2, col="red", t="l", main=expression(a[3]), xlab="x", ylab="density", cex.main=1.5)
+dev.off()
+
+pdf("b6.pdf")
+par(mfrow=c(2,3))
+plot(xs, dbeta(xs, 20, 12), lwd=2, col="blue", t="l", main=expression(a[1]), xlab="x", ylab="density", cex.main=1.5)
+plot(xs, dbeta(xs, 8, 21), lwd=2, col="blue", t="l", main=expression(a[2]), xlab="x", ylab="density", cex.main=1.5)
+plot(xs, dbeta(xs, 11, 83), lwd=2, col="blue", t="l", main=expression(a[3]), xlab="x", ylab="density", cex.main=1.5)
+
+plot(xs, dbeta(xs, 20, 20), lwd=2, col="red", t="l", main=expression(a[1]), xlab="x", ylab="density", cex.main=1.5)
+plot(xs, dbeta(xs, 4, 52), lwd=2, col="red", t="l", main=expression(a[2]), xlab="x", ylab="density", cex.main=1.5)
+plot(xs, dbeta(xs, 50, 50), lwd=2, col="red", t="l", main=expression(a[3]), xlab="x", ylab="density", cex.main=1.5)
+dev.off()
