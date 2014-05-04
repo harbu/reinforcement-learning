@@ -73,7 +73,7 @@ be just to fill up the web site with ads. However this can quickly lead to user
 annoyance, and in the worst scenario, cause users to leave the site. Further,
 the effectiveness of the advertisements starts to wither as more slots for
 banners are introduced, either because a saturation point is hit where users
-learn to ignore most of the banners, or there simply isn't room for more
+learn to ignore most of the banners, or there simply is not room for more
 banners on the page.
 
 An alternative strategy is to recognize that there is a limit to the number of
@@ -83,12 +83,6 @@ according to whom the ad is being displayed to. This is often referred to as
 intelligence, we can attempt to show the user advertisements he or she could
 potentially be interested in instead of just uniformly picking one out of a
 bunch.
-
-% TODO: use of term: targeted advertising vs. behavioral targeting
-
-% TODO: an clump of unsubstantiated claims; find some sources...
-
-% TODO: banner blindness, saturation
 
 This paper introduces two approaches to targeted advertising. First the
 simpler, multi-armed bandit model is explored in some detail. It is the classic
@@ -141,7 +135,7 @@ Depending upon what kind of aspects of the problem we wish to take into
 consideration, we may either consider targeted advertising through the simpler
 bandit approach, or, the more complex full reinforcement learning approach. The
 first approach is limited to immediate rewards while the second can learn from
-delayed rewards, i.e. rewards that aren't necessarily received immediately
+delayed rewards, i.e. rewards that are not necessarily received immediately
 after performing an action \cite{silver2013concurrent}. The reinforcement
 learning approach can also capture effects the ad displayer (the agent) has
 on the user (the state), for example user attrition caused by an offensive ad.
@@ -155,7 +149,7 @@ In the standard $n$-armed bandit problem, we are facing a slot machine with $n$
 levers. Each lever is associated with some distinct probability distribution
 that determines the amount of reward received from pulling that lever. Assuming
 that pulling a lever is free, but that we have a limited number of pulls, how
-to we maximize the expected total reward given that we don't know the
+do we maximize the expected total reward given that we do not know the
 underlying distributions? \cite{book}
 
 In the above situation, the \emph{exploration vs. exploitation} dilemma is
@@ -207,7 +201,7 @@ D) \propto \prod P(r_i | a_i, x_i, \theta) P(\theta)$, given prior $P(\theta)$.
 
 Assuming we knew the true parameters $\theta^*$, we would ideally choose the
 lever that maximizes expected reward $\arg\max_a E[r | a, x, \theta^*]$. In
-reality we don't know the true parameters. Instead, we must integrate over the
+reality we do not know the true parameters. Instead, we must integrate over the
 domain of the parameters $\theta$, obtaining $\arg\max_a \int E[r | a, x,
 \theta] P(\theta|D) d\theta$. However this corresponds to only exploitation.
 
@@ -218,7 +212,7 @@ obtained: the probability of choosing to perform pull $a$ is given by
   E\big[r|a',x,\theta\big]\bigg] P(\theta | D) d\theta
 \end{equation}
 
-This integral isn't directly computed, instead Algorithm~\ref{alg:thompson} is
+This integral is not directly computed, instead Algorithm~\ref{alg:thompson} is
 used to the same effect.
 
 \begin{algorithm}
@@ -236,7 +230,7 @@ used to the same effect.
   \end{algorithmic}
 \end{algorithm}
 
-Let's illustrate this idea with the help of an example. Assume the standard
+Let us illustrate this idea with the help of an example. Assume the standard
 $n$-armed bandits situation, in which each lever $i \in [1,n]$ is distributed
 according to a Bernoulli distribution with success probability $\theta^*_i$.
 For each arm $i$, we maintain a separate Beta distribution modeling our belief
@@ -247,7 +241,7 @@ $E[X_i] \sim \text{Beta}(S_i + 1, F_i + 1)$, where $S_i$ is the number of
 successes and $F_i$ is the number of failures observed so far for the $i$:th
 arm.
 
-This example is applied as Algorithm~\ref{alg:thompson} thusly. We initialize
+This example is applied as Algorithm~\ref{alg:thompson}. We initialize
 $S_i := F_i := 0$ for all arms. Line 3 can be ignored because we are not
 considering context. Line 4 is performed so that each arm's Beta distribution
 is sampled.  The arm with the largest sample is pulled, and its respective
@@ -259,8 +253,8 @@ Figure~\ref{fig:beta1} is the initial situation when anything yet is to be
 observed. Say we observe 8 ones and 2 zeros. The distribution will be as in
 Figure~\ref{fig:beta2}---tilted towards success. The contrary situation can be
 seen in Figure~\ref{fig:beta3}, where 2 successes and 4 failures have been
-observed. The tilt is slighter, because the observations don't just yet justify
-ruling out the large values.
+observed. The tilt is slighter, because the observations do not just yet
+justify ruling out the large values.
 
 \begin{figure}
   \centering
@@ -290,7 +284,7 @@ ruling out the large values.
 
 
 While the approach is Bayesian, it is not fully Bayesian like the Gittins
-index, which although is Bayes-optimal, can't be implemented efficiently in
+index, which although is Bayes-optimal, can not be implemented efficiently in
 practice \cite{chapelle2011empirical}. The downside of Thompson sampling is
 that there is a lack of theoretical analysis. Chapelle et al.
 \cite{chapelle2011empirical}, however, demonstrate empirically that it
@@ -323,17 +317,17 @@ in such a case.
 
 The paper \cite{chakrabarti2008mortal} also describes how standard multi-armed
 bandits can be adapted to take mortality into account. This is needed so that
-the algorithms don't spend too much time on exploration, an investment that is
+the algorithms do not spend too much time on exploration, an investment that is
 not justified under mortality. The idea of the \emph{subset heuristic} is to
 divide the rounds into epochs. At the dawn of each epoch, we choose a subset
 of arms uniformly at random from the set of all arms. We then run the standard
 multi-armed bandit algorithm on the subset until the end of the epoch.
 
-The classical, standard multi-armed algorithm, UCB1, is extended to allow for
-mortality. Whether or not the heuristic has been applied to contextual bandits
-and Thompson sampling is something the author of this seminar report couldn't
-find material on. However, on the surface, there seems to be no forbidding
-factors.
+The classical, standard multi-armed algorithm, UCB1 \cite{auer2002finite}, is
+extended to allow for mortality. Whether or not the heuristic has been applied
+to contextual bandits and Thompson sampling is something the author of this
+seminar report could not find material on. However, on the surface, there seems
+to be no forbidding factors.
 
 % TODO: how to apply to contextual bandit.
 % TODO: empirical results
@@ -380,7 +374,7 @@ find is the one that maximizes the reward accumulated over time, put formally,
 maximizes $\sum_{t=0}^\infty \gamma^t R_{a_t}(s_t, s_{t+1})$, where $\gamma \in
 [0,1)$ is the discount rate.
 
-In the reinforcement learning setting, we don't know the transition
+In the reinforcement learning setting, we do not know the transition
 probabilities $P_a$ or the reward functions $R_a$ in advance. This entails that
 in order to find an optimal policy---solve the \emph{control problem}---we
 must also solve the \emph{prediction problem}, or in some sense, estimate the
