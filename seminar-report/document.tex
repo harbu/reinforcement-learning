@@ -175,7 +175,7 @@ before having to choose the lever to pull. The setting has been outlined below.
     \end{enumerate}
 \end{itemize}
 
-It should be stated that even though at first glance, the multi-armed bandit
+It should be stated that even though at first glance the multi-armed bandit
 may seem like a very contrived problem, it is actually a very general
 framework. In the case of targeted advertising, one way to adapt to this model
 is as follows.  The agent making the decisions is the website. The levers to
@@ -188,9 +188,9 @@ interests, age and so on.
 Thompson sampling \cite{chapelle2011empirical} is an algorithm to address the
 exploitation vs. exploration trade-off in the contextual multi-armed bandit
 case. The idea is that we have a probability distribution on the arms denoting
-the probability that each is optimal. In each round, we sample this
-distribution so as to choose the next lever to pull. The distribution is then
-updated according to the rewards experienced.
+the probability that each is optimal. In each round, we sample these
+distributions so as to choose the next lever to pull. The distributions are
+then updated according to rewards experienced.
 
 Thompson sampling can be understood in the Bayesian context as follows. Denote
 previous observations of contexts, pulls and rewards as $D = \setof{(x_i, a_i,
@@ -203,17 +203,19 @@ Assuming we knew the true parameters $\theta^*$, we would ideally choose the
 lever that maximizes expected reward $\arg\max_a E[r | a, x, \theta^*]$. In
 reality we do not know the true parameters. Instead, we must integrate over the
 domain of the parameters $\theta$, obtaining $\arg\max_a \int E[r | a, x,
-\theta] P(\theta|D) d\theta$. However this corresponds to only exploitation.
+\theta] P(\theta|D) d\theta$. However this corresponds to only exploitation
+\cite{chapelle2011empirical}.
 
 Taking exploration into consideration as well, the following equation is
 obtained: the probability of choosing to perform pull $a$ is given by
 \begin{equation}
   \int \mathbb{I}\bigg[E[r|a,x,\theta] = \max_{a'}
-  E\big[r|a',x,\theta\big]\bigg] P(\theta | D) d\theta
+  E\big[r|a',x,\theta\big]\bigg] P(\theta | D) d\theta,
 \end{equation}
 
-This integral is not directly computed, instead Algorithm~\ref{alg:thompson} is
-used to the same effect.
+where $\mathbb{I}$ is an indicator function that obtains value 1 when its
+condition is true and zero when it is not.  This integral is not directly
+computed, instead Algorithm~\ref{alg:thompson} is used to the same effect.
 
 \begin{algorithm}
   \caption{Thompson sampling \cite{chapelle2011empirical}}
@@ -238,8 +240,8 @@ of what the arm's success probability is. In mathematical terms, if $X_i$ is
 the random variable corresponding to the reward received (0 or 1) from pulling
 the $i$:th lever, then $X_i \sim \text{Bernoulli}(\theta^*_i)$  and we estimate
 $E[X_i] \sim \text{Beta}(S_i + 1, F_i + 1)$, where $S_i$ is the number of
-successes and $F_i$ is the number of failures observed so far for the $i$:th
-arm.
+successes and $F_i$ is the number of failures observed for the $i$:th arm so
+far.
 
 This example is applied as Algorithm~\ref{alg:thompson}. We initialize
 $S_i := F_i := 0$ for all arms. Line 3 can be ignored because we are not
@@ -310,7 +312,7 @@ mortality, $t$ being the number of rounds.
 
 One of the main reasons for the worse bound is that in the non-mortal scenario,
 after finding an optimal arm, the algorithm can thereafter concentrate on
-indefinite exploitation. When arms are subjected to lifetimes, such nonchalance
+indefinite exploitation. When arms are subject to lifetimes, such nonchalance
 is out of the question.  An especially challenging case arises when there are
 many levers and short lifespans. Most likely, one must settle for suboptimality
 in such a case.
@@ -362,14 +364,14 @@ The simulation is started from an initial state $s_0$ at time 0. During each
 discrete time step $t$, we are in some state $s_t$, on the basis of which we
 must choose an action $a_t$, after which we are rewarded $r_t \in \mathbb{R}$,
 time $t$ is incremented by one, and we end up at state $s_{t+1}$
-\cite{abe2002empirical}. The task is called \emph{episodic} if there is an end
-state, after which the simulation is restarted. Otherwise we call the task
+\cite{abe2002empirical}. The task is called \emph{episodic} if there are end
+states, after which the simulation is restarted. Otherwise we call the task
 \emph{continuing} \cite{book}.
 
 The central problem here, then, is to find a (near) optimal policy $\pi$ for
 the agent performing the actions. Given we are in state $s_t \in S$, $\pi(s_t)$
-indicates the action $a_t$ that should be performed. This can be a probability
-distribution defined on set of all actions $A$. The optimal policy we wish to
+indicates the action $a_t$ that should be performed. (This can be a probability
+distribution defined on set of all actions $A$.) The optimal policy we wish to
 find is the one that maximizes the reward accumulated over time, put formally,
 maximizes $\sum_{t=0}^\infty \gamma^t R_{a_t}(s_t, s_{t+1})$, where $\gamma \in
 [0,1)$ is the discount rate.
@@ -437,7 +439,7 @@ In real world (advertisement) data there tends to be a huge amount of features,
 which means that if we treat the state space of the reinforcement learning
 problem as the feature space, we get a huge explosion in the number of states
 \cite{abe2002empirical}.  This means that most likely the reinforcement
-learning will not know to behave desirably in never-before-seen states
+learning will not know how to behave desirably in never-before-seen states
 \cite{book}.
 
 TODO:
