@@ -677,36 +677,27 @@ methods, but this TD(1) may also be applied to continuing tasks \cite{book}.
 Finally, we denote the $\lambda$-backup as $\Delta V_t(s_t) =
 \alpha[R^{\lambda}_t - V_t(s_t)]$.
 
-% TODO: more on this or not?
-
-
-\subsubsection{Direct, indirect and semi-direct reinforcement learning}
-We now turn our attention to a real-world application of reinforcement learning
-to a targeted marketing task. The task involved was concerned with direct-mail
-promotional data but the ideas may be applied to the banner ad domain as well.
-
-\subsubsection{Concurrent reinforcement learning}
-
-\begin{itemize}
-  \item{Introduce concurrent reinforcement learning.}
-\end{itemize}
-
+The details of the TD($\lambda$) algorithm are intricate and will not be
+explained here in furtherance of brevity. A tutorial on the subject can be
+found in Sutton's and Barto's book \cite{book}. TD($\lambda$) only solves the
+prediction problem --- to learn the policy, modified Sarsa or Q-learning
+algorithms must be used.
 
 \subsection{Function approximation}
-In real world (advertisement) data there tends to be a huge amount of features,
-which means that if we treat the state space of the reinforcement learning
-problem as the feature space, we get a huge explosion in the number of states
-\cite{abe2002empirical}.  This means that most likely the reinforcement
-learning or bandit policy will not know how to behave desirably in
-never-before-seen states \cite{book}. This problem becomes even more apparent
-if some features are continuous-valued.
-
 \label{sec:function_approximation}
+In real world (advertisement) data there tends to be a huge amount of features
+(regarding a user profile), which means that if we treat the state space of the
+reinforcement learning problem as the feature space, we get a huge explosion in
+the number of states \cite{abe2002empirical}.  This means that most likely the
+reinforcement learning or bandit policy will not know how to behave desirably
+in never-before-seen states \cite{book}. This problem becomes even more
+apparent if some features are continuous-valued.
+
 Almost all the implementations \cite{abe2002empirical, silver2013concurrent,
-chapelle2011empirical} considered in this seminar report required some sort of
-function approximation, regardless of whether they were bandit or reinforcement
+chapelle2011empirical} considered in this seminar report require some sort of
+function approximation, regardless of whether they are bandit or reinforcement
 based. Therefore simple algorithms based on tabular $Q$ value functions (i.e.
-each state-action pair as an entry of a table) could not be directly used.
+each state-action pair as an entry of a table) can not be directly used.
 
 In \emph{function approximation}, we attempt to generalize from a limited
 subset to an entirety. In the context of $Q$ value functions, we attempt to
@@ -716,20 +707,101 @@ experienced, to the entire set of all possible state-action pairs.
 Fortunately approximating a target function by generalizing from examples is
 something that has been extensively studied in machine learning under the term
 \emph{supervised machine learning}. Methods such as artificial neural networks,
-decision trees or multivariate linear regression may be used. The central
-notion is that instead of a table, we represent the value function as a
-parameterized functional form, where the parameter vector $\theta_t$ is of much
-smaller dimensionality than the total number of state-action pairs. We then use
-a supervised machine learning algorithm with the state-action pairs and their
-$Q$ value estimates as input, to learn the parameter vector $\theta_t$ that
-minimizes mean squared error.
+decision trees or multivariate linear regression may be used.
+
+The central notion is that instead of a table, we represent the value function
+as a parameterized functional form, where a parameter vector $\theta_t$ is of
+much smaller dimensionality than the total number of state-action pairs. We
+then invoke a supervised machine learning algorithm with the state-action pairs
+and their respective $Q$ value estimates as input, to learn the parameter
+vector $\theta_t$ that minimizes mean squared error.
 
 It is important that the supervised learning model used exhibit two properties.
-First, it should be able to learn on-line as the reinforcement learning
+First, it should be able to learn on-line while the reinforcement learning
 algorithm interacts with its environment. Second, the supervised model should
 be able to handle nonstationary target functions.
 
+An example of reinforcement learning with function approximation is given in
+the Section~\ref{sec:sequential-targeted-marketing}
+
 % TODO: example
+
+
+
+\subsubsection{Sequential targeted marketing}
+\label{sec:sequential-targeted-marketing}
+We now turn our attention to a real-world application of reinforcement learning
+to a targeted marketing task. The task \cite{abe2002empirical} involved is
+concerned with direct-mail promotional data but the ideas may be applied to the
+banner ad domain with some thought.
+
+The data set that Abe et al. \cite{abe2002empirical} used in their study was
+concerned with direct mail promotions for soliciting donations. For each user,
+demographic data was available as well as promotion history of 22 (monthly)
+campaigns pertaining to each user.  Features such as user age and income
+bracket, whether or not he or she responded to the last campaign, and if so,
+what the donation amount given was.  Also, whether the user was mailed 2 months
+ago, 3 months ago, whether user responded 2 or 3 months ago and so on. The data
+set consisted of about 100 thousand users.
+
+Using features of the likes described above, the state of a user during
+different months was modeled. Of particular interest was how the retailer's
+actions affect each customer's behavior. For example, if too many mails are
+sent, a saturation point may be hit in which a customer is unwilling or unable
+to donate.
+
+Given the data described above, Abe et al. \cite{abe2002empirical} present
+and compare three batch methods for learning a value function $Q(s,a)$ that
+gives the expected long-term reward for sending or not sending a mail (action
+$a$) to user profile $s$. In their reinforcement model, there is an inherit
+cost for sending a mail. Already because of this fact, sending non-effective
+mails should be avoided.
+
+The first method is what they call 'direct'. It requires no model of the
+environment, which the authors hypothesize is a good thing as customer behavior
+is notoriously difficult to accurately model. The method uses function
+approximation to represent the value function $Q$. To this end, a multivariate
+linear regression tree method is employed which produces decision trees with
+multivariate linear regression models at the leaf nodes. Sarsa learning is used
+to recalculate target values. The algorithm is given in
+Algorithm~\ref{alg:directrl}.
+
+\begin{algorithm}
+  \caption{Direct-RL (sarsa) \cite{abe2002empirical}}
+  \label{alg:directrl}
+  \begin{algorithmic}[1]
+    \State ebin
+  \end{algorithmic}
+\end{algorithm}
+
+The authors also present an 'indirect' method that relies on estimating
+transition probabilities and reward functions from the data. In an
+artificial setting where such dynamics can be accurately estimated, this method
+works the best. Nonetheless, in a real world setting, such is not the case.
+
+The middle road is what the authors advocate for. A 'direct' method that
+incorporates some aspects of the 'indirect' method such as selective sampling
+to effectively change the sampling policy over the course of learning, and
+using estimated rewards in place of actual observed rewards in the data so as
+to make the learning more stable.
+
+
+In the empirical section of their paper, Abe et al. \cite{abe2002empirical}
+give verification to the claim that customer behavior is too complex to model
+reliably. More precisely, they show via controlled experiments that in the
+context of their targeted marketing data, direct methods are better than
+indirect methods. They also demonstrate that their semi-direct method learnss to
+make better profit in shorter time than the purely 'direct' method.
+
+% TODO: ad banner?
+
+
+\subsubsection{Concurrent reinforcement learning}
+
+\begin{itemize}
+  \item{Introduce concurrent reinforcement learning.}
+\end{itemize}
+
 
 \section{Conclusions}
 
