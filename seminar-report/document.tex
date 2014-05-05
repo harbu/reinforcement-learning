@@ -457,9 +457,6 @@ been applied to contextual bandits and Thompson sampling is something the
 author of this seminar report could not find material on. However, on the
 surface, there seems to be no forbidding factors.
 
-% TODO: how to apply to contextual bandit.
-% TODO: empirical results
-
 \subsection{Reinforcement learning}
 
 Sometimes we may need an approach that captures more than what the $n$-armed
@@ -479,10 +476,10 @@ A Markov decision process (MDP) \cite{book} is a 4-tuple
 \end{equation}
 
 Above $S$ is a finite set of states. $A$ is a finite set of actions. Function
-$P_a(s, s')$ gives the probability of transitioning to state $s'$ after
-performing action $a$ in state $s$. The reward function $R_a : S \times S
-\rightarrow \mathbb{R}$ gives the immediate reward obtained from performing
-action $a$ in state $s$ and ending up in $s'$.
+$P_a(s, s') = Pr(s_{t+1} = s' \;|\; s_t = s, a_t = a)$ gives the probability of
+transitioning to state $s'$ after performing action $a$ in state $s$. The
+reward function $R_a : S \times S \rightarrow \mathbb{R}$ gives the immediate
+reward obtained from performing action $a$ in state $s$ and ending up in $s'$.
 
 The simulation is started from an initial state $s_0$ at time 0. During each
 discrete time step $t$, we are in some state $s_t$, on the basis of which we
@@ -557,7 +554,46 @@ control problem, i.e. learning a policy $\pi$. For example, popular methods
 such as Sarsa and Q-learning often use something like $\epsilon$-greedy to
 select the next action for which to update the value function $Q$.
 
-\subsubsection{}
+\subsubsection{Temporal-difference (TD) learning}
+
+There are several ways to solve the prediction (estimating $Q^*$) and the
+control (finding $\pi^*$) problems. In the unrealistic situation, in which we
+know the transition and reward probabilities, or the \emph{dynamics} of the
+system, we can simply apply dynamic programming based methods such as
+\emph{policy iteration} or \emph{value iteration} to find the optimal policy
+without any experience needed. The required premise hardly ever holds in real
+world problems, though.
+
+\emph{Monte Carlo} (MC) methods, on the other hand, rely on experience to learn
+under unknown transition and reward probabilities. MC methods wait till the end
+of an episode to update the value functions of states that were encountered
+during the episode. The primary idea is encapsulated in the update rule below,
+where $s_t$ is the state and $a_t$ the action taken for time step $t$, $\alpha$
+is the step-size parameter, and $R_t = r_{t+1} + \gamma r_{t+2} + \gamma^2
+r_{t+3} + ... + \gamma^{T-1} r_{T}$ is the actual discounted return following
+time $t$.
+
+\begin{equation}
+  Q(s_t, a_t) \leftarrow
+  Q(s_t, a_t) + \alpha \big[ R_t - Q(s_t, a_t)\big]
+\end{equation}
+
+For many purposes this is fine. In our case the episodes may not be episodic
+but continuing instead, which does not align well with MC methods. Second,
+learning until an episode has finished may be problematic if the episodes are
+long, because then all learning is delayed till the very end.
+
+A method more suitable for on-line, incremental learning is \emph{temporal
+difference} (TD) learning \cite{sutton1988learning}. The main idea is that
+after an action has been performed and a reward received, we immediately update
+the value function of the previous state accordingly. This leads to the update
+rule
+
+\begin{equation}
+  Q(s_t, a_t) \leftarrow
+  Q(s_t, a_t) + \alpha \big[ r_{t+1} + \gamma Q(s_{t+1}, a_{t+1})
+  - Q(s_t, a_t)\big],
+\end{equation}
 
 
 \subsubsection{Direct, indirect and semi-direct reinforcement learning}
