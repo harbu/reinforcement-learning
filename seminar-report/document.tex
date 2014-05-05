@@ -126,9 +126,6 @@ corporations Microsoft and Yahoo conduct applied research in this field, while
 the National Institute of Statistical Science (NISS) held a workshop on the
 topic in 2009. % wikipedia
 
-% TODO: more prior research
-
-
 \section{Approaches}
 
 Depending upon what kind of aspects of the problem we wish to take into
@@ -381,8 +378,6 @@ amount of time. Thompson sampling alleviates the problem of delayed feedback by
 randomization over actions, while deterministic UCB suffers large regret when
 it gets locked on to a suboptimal choice.
 
-% TODO: what cases?
-
 \subsubsection{Mortal bandits}
 Most often in online advertisement, the ads (the levers) have a limited
 lifespans due to limited budgets, seasonal holiday campaigns, and other
@@ -401,29 +396,61 @@ mortality, $t$ being the number of rounds.
 
 One of the main reasons for the worse bound is that in the non-mortal scenario,
 after finding an optimal arm, the algorithm can thereafter concentrate on
-indefinite exploitation. When arms are subject to lifetimes, such nonchalance
-is out of the question.  An especially challenging case arises when there are
-many levers and short lifespans. Most likely, one must settle for suboptimality
-in such a case.
+indefinite exploitation. (Maybe doing some exploration on the side as well, to
+account for nonstationarity.) When arms are subject to lifetimes, such
+nonchalance is out of the question.  An especially challenging case arises when
+there are many levers and short lifespans. Most likely, one must settle for
+suboptimality in such a case.
 
 The paper \cite{chakrabarti2008mortal} also describes how standard multi-armed
 bandits can be adapted to take mortality into account. This is needed so that
 the algorithms do not spend too much time on exploration, an investment that is
 not justified under mortality. The idea of the \emph{subset heuristic} is to
-divide the rounds into epochs. At the dawn of each epoch, we choose a subset
-of arms uniformly at random from the set of all arms. We then run the standard
-multi-armed bandit algorithm on the subset until the end of the epoch.
+divide the rounds $t=1...T$ into epochs. At the dawn of each epoch, we choose a
+subset of arms uniformly at random from the set of all arms. We then run the
+standard multi-armed bandit algorithm on the subset until the end of the epoch.
+This method is outlined in Algorithm~\ref{alg:subsetheuristic}.
 
-The classical, standard multi-armed algorithm, UCB1 \cite{auer2002finite}, is
-extended to allow for mortality. Whether or not the heuristic has been applied
-to contextual bandits and Thompson sampling is something the author of this
-seminar report could not find material on. However, on the surface, there seems
-to be no forbidding factors.
+\begin{algorithm}
+  \caption{Subset heuristic, adapted from \cite{chakrabarti2008mortal}}
+  \label{alg:subsetheuristic}
+  \begin{algorithmic}[1]
+    \Require Integer $c \in [1,K]$, any standard multi-armed bandit algorithm
+    $A$
+    \For{$t=1,...,T$ (each round)}
+      \State $S := $ choose $K/c$ random arms.
+      \State $dead := 0$.
+      \State Initialize algorithm $A$ over arms $S$.
+      \Repeat
+        \State Select arm $i$ using algorithm $A$.
+        \State Pull arm $i$, provide reward to $A$.
+        \State $S_d :=$ arms that died during turn.
+        \State $S := S \setminus S_d$
+        \State $dead := dead + |S_d|$.
+      \Until{$dead \geq K/2$ \textbf{or} $|S| = 0$}
+    \EndFor
+  \end{algorithmic}
+\end{algorithm}
+
+Let us summarize Algorithm~\ref{alg:subsetheuristic}. It selects a random
+subset of the arms and then uses a multi-armed bandit algorithm on that set
+until all arms considered are dead or $K/2$ arms have died. Then the process is
+restarted: a new epoch begins. At the heart of this algorithm is the idea that
+we attempt to find the optimal arm within a subset instead of the entire set of
+arms. The reasoning being that we would not really benefit on using lots of
+time on finding optimal arms in the entire set, as effort are quickly
+diminished by mortality
+
+The classical multi-armed bandit algorithm, UCB1 \cite{auer2002finite}, is
+extended to allow for mortality in Chakrabarti et al.
+\cite{chakrabarti2008mortal} in a manner described by
+Algorithm~\ref{alg:subsetheuristic}. Whether or not the subset heuristic has
+been applied to contextual bandits and Thompson sampling is something the
+author of this seminar report could not find material on. However, on the
+surface, there seems to be no forbidding factors.
 
 % TODO: how to apply to contextual bandit.
 % TODO: empirical results
-
-
 
 \subsection{Reinforcement learning}
 
@@ -459,11 +486,13 @@ states, after which the simulation is restarted. Otherwise we call the task
 
 The central problem here, then, is to find a (near) optimal policy $\pi$ for
 the agent performing the actions. Given we are in state $s_t \in S$, $\pi(s_t)$
-indicates the action $a_t$ that should be performed. (This can be a probability
-distribution defined on set of all actions $A$.) The optimal policy we wish to
-find is the one that maximizes the reward accumulated over time, put formally,
-maximizes $\sum_{t=0}^\infty \gamma^t R_{a_t}(s_t, s_{t+1})$, where $\gamma \in
-[0,1)$ is the discount rate.
+indicates the action $a_t$ that should be performed. (Sometimes this is instead
+a probability distribution defined on set of all actions $A$.) The optimal
+policy we wish to find is the one that maximizes the reward accumulated over
+time, put formally, maximizes $\sum_{t=0}^\infty \gamma^t R_{a_t}(s_t,
+s_{t+1})$, where $\gamma \in [0,1)$ is the discount rate. For an episodic task,
+$\infty$ can be replaced with the total number of rounds $T$, or, the terms of
+the sum after $t \geq T$ can be thought of as all being zero.
 
 In the reinforcement learning setting, we do not know the transition
 probabilities $P_a$ or the reward functions $R_a$ in advance. This entails that
@@ -497,13 +526,28 @@ choose the action that maximizes the value function, or, $\pi(s) = \arg\max_a
 Q(s,a)$. In the case of optimal value function $Q^*$, following this method
 leads to the optimal policy $\pi^*$ \cite{abe2002empirical}.
 
-%TODO: more on value function?
+\subsubsection{Relation between multi-armed bandits and reinforcement learning}
 
-The standard multi-armed bandit can be viewed as a Markov decision process in
-which there is exactly one state. The levers of the bandit are all the possible
-actions, and performing an action always brings you back to the initial state.
-The contextual bandit model does have different states, but the action chosen
-doesn't impact the choice of the next state.
+There are at least two ways in which multi-armed bandits are related to
+reinforcement learning.
+
+First of all, a standard multi-armed bandit can be viewed as a Markov decision
+process in which there is exactly one state. The levers of the bandit are all
+the possible actions, and performing an action always brings you back to the
+initial state. The contextual bandit model does have different states,
+corresponding to different users, but the action chosen do not impact the
+choice of the next state. Either the same user gets served a new ad, or
+another user with a different profile is served. In the full reinforcement
+learning model, we can follow the lifetime of the user when they are visiting
+our site. Notably, we can model how the ads displayed impact the state of the
+user.
+
+There is also another link between multi-armed bandits and reinforcement
+learning. Many reinforcement learning algorithms rely on an exploitation vs.
+exploration strategy when choosing which actions to test out while solving the
+control problem, i.e. learning a policy $\pi$. For example, popular methods
+such as Sarsa and Q-learning often use something like $\epsilon$-greedy to
+select the next action for which to update the value function $Q$.
 
 
 \subsubsection{Direct, indirect and semi-direct reinforcement learning}
