@@ -644,15 +644,48 @@ Q-learning is similar, major difference being that the update rule becomes:
 
 \subsubsection{Eligibility traces and TD($\lambda$) algorithm}
 
+Eligibility traces \cite{watkins1989learning} allow for methods that are in
+between the temporal difference and Monte Carlo methods discussed in the
+previous section. MC methods require the whole episode to finish before
+updating, whereas TD updates after each step. In between the above
+infinite-step and one-step backups, lay $n$-step backups that are defined as:
+\begin{equation}
+  \Delta V_t(s_t) = \alpha[R^{(n)}_t - V_t(s_t)]
+\end{equation}
+where $R^{(n)}_t = r_{t+1} + \gamma r_{t+2} + \gamma^2 r_{t+3} + ... +
+\gamma^{n-1} r_{t+n} + \gamma^n V_t(s_{t+n})$ is the $n$-step return. When $n =
+1$ this is effectively the TD algorithm described previously. With $n = T$ this
+is effectively Monte Carlo. For example with $t=2$, the update to state $s_t$
+would be based on the next two rewards and the value of the estimated value
+function for state $s_{t+2}$.
+
+A computationally more convenient formulation of this idea is the TD$(\lambda)$
+algorithm \cite{sutton1988learning}, in which a weighted average of several
+$n$-step backups is considered in updates. The resulting return, called
+\emph{$\lambda$-return}, is of the form
+\begin{equation}
+  R^{\lambda}_t = (1 - \lambda) \sum_{n=1}^{\infty} \lambda^{n-1} R^{(n)}_t.
+\end{equation}
+Above $0 \leq \lambda \leq 1$ is a decay parameter, $(1-\lambda)$ is a
+normalization factor that ensures that weights sum up to one. The idea here is
+that as we consider returns $R^{(n)}_t$ further in time from the current point
+$t$, or as $n$ grows, the effect of longer-time returns decay according to
+$\lambda$.
+
+With $\lambda = 0$, we get the equivalent to the one-step TD method, which we
+from now on also denote as TD(0). With $\lambda = 1$, we effectively get the MC
+methods, but this TD(1) may also be applied to continuing tasks \cite{book}.
+Finally, we denote the $\lambda$-backup as $\Delta V_t(s_t) =
+\alpha[R^{\lambda}_t - V_t(s_t)]$.
+
+% TODO: more on this or not?
+
 
 \subsubsection{Direct, indirect and semi-direct reinforcement learning}
 
 \subsubsection{Concurrent reinforcement learning}
 
 \begin{itemize}
-  \item{Motivate need for concurrent reinforcement learning in targeted
-    advertising.}
-  \item{Introduce TD($\lambda$)-learning algorithms.}
   \item{Introduce concurrent reinforcement learning.}
 \end{itemize}
 
