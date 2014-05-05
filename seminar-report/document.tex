@@ -51,15 +51,14 @@ Department of Computer Science, University of Helsinki\\\\
 \maketitle
 
 \begin{abstract}
-  On the Internet, content producers often make their profits through banner ad
+  On the Internet, content producers often make profits through banner ad
   clicks. Thus it is of interest to find ways to increase banner ad
   click-through rates (CTR). One way towards this goal is targeted advertising,
   in which the profile of the visiting user is used to determine which ads he
   or she would be interested in. This seminar report surveys multi-armed bandit
   and reinforcement learning approaches to targeted advertising. Thompson
   sampling, mortal bandits, as well as temporal difference learning are the
-  methods considered. We also brush upon how to deal with the
-  high-dimensionality of typical marketing data.
+  methods considered.
 \end{abstract}
 
 \section{Introduction}
@@ -682,6 +681,9 @@ Finally, we denote the $\lambda$-backup as $\Delta V_t(s_t) =
 
 
 \subsubsection{Direct, indirect and semi-direct reinforcement learning}
+We now turn our attention to a real-world application of reinforcement learning
+to a targeted marketing task. The task involved was concerned with direct-mail
+promotional data but the ideas may be applied to the banner ad domain as well.
 
 \subsubsection{Concurrent reinforcement learning}
 
@@ -691,29 +693,43 @@ Finally, we denote the $\lambda$-backup as $\Delta V_t(s_t) =
 
 
 \subsection{Function approximation}
-\label{sec:function_approximation}
-Almost all the implementations \cite{abe2002empirical, silver2013concurrent,
-chapelle2011empirical} of targeted advertising considered in this seminar
-report required some sort of function approximation, regardless of whether they
-were bandit or reinforcement based.
-
 In real world (advertisement) data there tends to be a huge amount of features,
 which means that if we treat the state space of the reinforcement learning
 problem as the feature space, we get a huge explosion in the number of states
 \cite{abe2002empirical}.  This means that most likely the reinforcement
-learning will not know how to behave desirably in never-before-seen states
-\cite{book}.
+learning or bandit policy will not know how to behave desirably in
+never-before-seen states \cite{book}. This problem becomes even more apparent
+if some features are continuous-valued.
 
-TODO:
-\begin{itemize}
-  \item{Define function approximation precisely: "We estimate and represent the
-    value function as a function of state features and actions"}
-  \item{Relation to supervised machine learning. Supervised learning model
-    should support learning from incrementally acquirred data. Nonstationary
-  target functions.}
-  \item{In my examples: multivariate linear regression}
-\end{itemize}
+\label{sec:function_approximation}
+Almost all the implementations \cite{abe2002empirical, silver2013concurrent,
+chapelle2011empirical} considered in this seminar report required some sort of
+function approximation, regardless of whether they were bandit or reinforcement
+based. Therefore simple algorithms based on tabular $Q$ value functions (i.e.
+each state-action pair as an entry of a table) could not be directly used.
 
+In \emph{function approximation}, we attempt to generalize from a limited
+subset to an entirety. In the context of $Q$ value functions, we attempt to
+generalize from a limited subset of state-action pairs that we have
+experienced, to the entire set of all possible state-action pairs.
+
+Fortunately approximating a target function by generalizing from examples is
+something that has been extensively studied in machine learning under the term
+\emph{supervised machine learning}. Methods such as artificial neural networks,
+decision trees or multivariate linear regression may be used. The central
+notion is that instead of a table, we represent the value function as a
+parameterized functional form, where the parameter vector $\theta_t$ is of much
+smaller dimensionality than the total number of state-action pairs. We then use
+a supervised machine learning algorithm with the state-action pairs and their
+$Q$ value estimates as input, to learn the parameter vector $\theta_t$ that
+minimizes mean squared error.
+
+It is important that the supervised learning model used exhibit two properties.
+First, it should be able to learn on-line as the reinforcement learning
+algorithm interacts with its environment. Second, the supervised model should
+be able to handle nonstationary target functions.
+
+% TODO: example
 
 \section{Conclusions}
 
