@@ -6,7 +6,7 @@
 \usepackage{subcaption}
 \usepackage{amssymb}
 \usepackage{algorithm}
-\usepackage[noend]{algpseudocode}
+\usepackage{algpseudocode}
 \usepackage{url}
 \usepackage[
 abbreviate=false,
@@ -177,12 +177,14 @@ before having to choose the lever to pull. The setting has been outlined below.
 
 It should be stated that even though at first glance the multi-armed bandit
 may seem like a very contrived problem, it is actually a very general
-framework. In the case of targeted advertising, one way to adapt to this model
+framework. In the case of targeted advertising, one way to adapt this model
 is as follows.  The agent making the decisions is the website. The levers to
 pull are all the possible ads that can be shown in a banner slot. The reward
 received is 1 if a user clicks the ad, and 0 otherwise. The context is some
 information gathered on the user, e.g. what pages they have visited, gender,
-interests, age and so on.
+interests, age and so on. A more complex reward function could also be
+considered, in which the reward received depends, for example, on which ad is
+being displayed.
 
 \subsubsection{Thompson sampling}
 Thompson sampling \cite{chapelle2011empirical} is an algorithm to address the
@@ -235,62 +237,149 @@ computed, instead Algorithm~\ref{alg:thompson} is used to the same effect.
 Let us illustrate this idea with the help of an example. Assume the standard
 $n$-armed bandits situation, in which each lever $i \in [1,n]$ is distributed
 according to a Bernoulli distribution with success probability $\theta^*_i$.
+This is equivalent to a biased coin flip, in which heads ($r=1$) is observed
+with probability $\theta^*_i$ and tails ($r=0$) with probability $1 -
+\theta^*_i$.
+
 For each arm $i$, we maintain a separate Beta distribution modeling our belief
-of what the arm's success probability is. In mathematical terms, if $X_i$ is
-the random variable corresponding to the reward received (0 or 1) from pulling
-the $i$:th lever, then $X_i \sim \text{Bernoulli}(\theta^*_i)$  and we estimate
-$E[X_i] \sim \text{Beta}(S_i + 1, F_i + 1)$, where $S_i$ is the number of
-successes and $F_i$ is the number of failures observed for the $i$:th arm so
-far.
+of what the arm's success probability (or CTR) is. In mathematical terms, if
+$X_i$ is the random variable corresponding to the reward received (coin flip,
+click or not, 0 or 1) from pulling the $i$:th lever, then $X_i \sim
+\text{Bernoulli}(\theta^*_i)$, and we estimate $E[X_i] \sim \text{Beta}(S_i +
+1, F_i + 1)$, where $S_i$ is the number of successes and $F_i$ is the number of
+failures observed for the $i$:th arm so far. The Beta distribution is used
+because it is the conjugate prior of the Bernoulli likelihood, a concept from
+Bayesian probability theory that roughly states that the posterior distribution
+stays in the same family as the prior distribution. Furthermore, the math works
+out in an intuitive sense.
 
-This example is applied as Algorithm~\ref{alg:thompson}. We initialize
-$S_i := F_i := 0$ for all arms. Line 3 can be ignored because we are not
-considering context. Line 4 is performed so that each arm's Beta distribution
-is sampled.  The arm with the largest sample is pulled, and its respective
-success or failure counter is updated after receiving the reward.
+This example is applied as Algorithm~\ref{alg:thompson} as follows. We
+initialize $S_i := F_i := 0$ for all arms. Line 3 can be ignored because we are
+not considering context. Line 4 is performed so that each arm's Beta
+distribution is sampled.  The arm with the largest sample is pulled, and its
+respective success or failure counter is updated after receiving the reward.
+This is equivalent to the posterior update on Line 7.  The pseudocode for this
+Bernoulli case has been outlined in Algorithm~\ref{alg:thompson-bandit}.
 
-How a beta distribution, conveying our belief on success probability for an
-arm, can look like, is illustrated in Figure~\ref{fig:beta}.
-Figure~\ref{fig:beta1} is the initial situation when anything yet is to be
-observed. Say we observe 8 ones and 2 zeros. The distribution will be as in
-Figure~\ref{fig:beta2}---tilted towards success. The contrary situation can be
-seen in Figure~\ref{fig:beta3}, where 2 successes and 4 failures have been
-observed. The tilt is slighter, because the observations do not just yet
-justify ruling out the large values.
+\begin{algorithm}[H]
+  \caption{Thompson sampling for the Bernoulli bandit, adapted from \cite{chapelle2011empirical}}
+  \label{alg:thompson-bandit}
+  \begin{algorithmic}[1]
+    \Require Prior parameters $\alpha$ and $\beta$ of a Beta distribution.
+    Typical value is 1.
+    \State $S_i := F_i := 0, \; \forall i \in [1,K]$.
+    \For{$t=1,...,T$ (each round)}
+      \For{$k=1,...,K$ (each arm)}
+      \State Draw $\theta_i \sim \text{Beta}(S_i + \alpha, F_i + \beta)$
+      (sample each arm).
+      \EndFor
+      \State Draw arm $\hat{i} := \arg\max_{i} \theta_i$ (with largest sample) and observe reward $r$.
+      \If {$r=1$}
+      \State Increment success counter $S_{\hat{i}} := S_{\hat{i}} + 1$.
+      \Else
+        \State Increment failure counter $F_{\hat{i}} := F_{\hat{i}} + 1$.
+      \EndIf
+    \EndFor
+  \end{algorithmic}
+\end{algorithm}
 
-\begin{figure}
+How a Beta distribution, conveying our belief on click probability for an arm,
+can look like, is illustrated in Figure~\ref{fig:beta}. Shown is the history of
+a Beta distribution for a single arm. Naturally, each arm would have a history
+of Beta distributions running parellel to the one shown in
+Figure~\ref{fig:beta}.
+
+From left to right of Figure~\ref{fig:beta}, we start off with the initial
+situation in which no observations have yet been done. The uniform prior,
+$\alpha = \beta = 1$, is used so that each success probability $\theta^*_i$ is
+believed to be equally likely.
+
+The second plot shows how the distribution looks like after we have observed
+one click of the respective ad. Our beliefs shift towards higher click-through
+rates. In the third plot, 6 clicks and 3 non-clicks have been recorded.
+Non-clicks cause the distribution to shift a bit leftwards towards lower CTR.
+The final figure shows how the distributions looks like after 300 clicks and 60
+non-clicks. We see how the distribution sharpens --- it is more confident that
+the 'true' CTR lays at about $300 / 360 \approx 0.833$.
+
+\begin{figure}[H]
   \centering
-  \begin{subfigure}{.30\textwidth}
+  \begin{subfigure}{.25\textwidth}
     \centering
     \includegraphics[width=.9\linewidth]{beta1.pdf}
-    \caption{Initial situation.}
-    \label{fig:beta1}
   \end{subfigure}%
-  \begin{subfigure}{.30\textwidth}
+  \begin{subfigure}{.25\textwidth}
     \centering
     \includegraphics[width=.9\linewidth]{beta2.pdf}
-    \caption{After observing many more successes than failures.}
-    \label{fig:beta2}
   \end{subfigure}%
-  \begin{subfigure}{.30\textwidth}
+  \begin{subfigure}{.25\textwidth}
     \centering
     \includegraphics[width=.9\linewidth]{beta3.pdf}
-    \caption{After observing slightly more failures than successes.}
-    \label{fig:beta3}
+  \end{subfigure}%
+  \begin{subfigure}{.25\textwidth}
+    \centering
+    \includegraphics[width=.9\linewidth]{beta4.pdf}
   \end{subfigure}
-  \caption{Illustration on what the distribution modeling the success
-  probability of a Bernoulli distribution can look like.}
+  \caption{Illustration on what a series of Beta distributions modeling the
+  success probability of a Bernoulli distribution can look like. On the very
+left is the initial uniform situation when nothing has yet been observed. Then
+a single ad click click ($r=1$) is observed, which tilts our belief to higher click
+rates. Then 5 clicks ($r=1$, successes) and 2 non-clicks ($r=0$, failures) are
+recorded. The final situation to the very right shows what the distribution
+looks like after 300 clicks and 60 non-clicks.}
   \label{fig:beta}
 \end{figure}
 
+Figure~\ref{fig:beta} highlights the situation for only a single arm (ad).
+Each ad will have a respective series of Beta distributions according to
+history of clicks observed. At round $t$ we sample each ad's current
+distribution, as in Lines 3-5 of Algorithm~\ref{alg:thompson-bandit}, and show
+the ad with the highest sample. This means that in the long run, when the
+distributions settle on some peaks, the algorithm will start to exploit.
+However there is still randomness involved, and occasionally, other ads will be
+shown as well, and their respective distributions updated.
 
+The parameters to tinker with in this situation are the priors $\alpha$ and
+$\beta$. They can be set uniquely for each distribution to model our prior
+belief that some ads will be clicked on more than others, if, we have a strong
+conviction that such is the case. Chapelle et al. \cite{chapelle2011empirical}
+note that even with prior mismatches, Thompson sampling works well. Thus the
+defaults are often good enough in practice.
 
-While the approach is Bayesian, it is not fully Bayesian like the Gittins
-index, which although is Bayes-optimal, can not be implemented efficiently in
-practice \cite{chapelle2011empirical}. The downside of Thompson sampling is
-that there is a lack of theoretical analysis. Chapelle et al.
+We can also reshape the posterior distributions to be more sharp, thereby
+favoring exploitation, or, we can widen them to favor exploration. The latter
+may be useful in situations where the distributions are highly nonstationary.
+For example, in the ad banner domain, it may be that users get tired of the
+same ads being displayed over a long period of time. Perhaps some big news
+event happens and suddenly users are interested in clicking an ad that used to
+be uninteresting to them. Hence estimated sharp click-through rates are no
+longer acccurate, and more uncertainty should be introduced in the form of
+widening the posteriors.
+
+In the example above, we did not consider context.  To use contexts in this
+Thompson setting, we need a separate distribution for each ad and user profile
+pair. Not surprisingly then, if the number of ads, and especially, if the
+number of possible user profiles is too high, we need a huge set (possibly of
+infinite cardinality) of distributions. What follows easily is that we
+encounter a situation, where there are too many parameters to learn reliably.
+There are ways to combat this as will be seen in
+Section~\ref{sec:function_approximation}.
+
+While the presented approach is Bayesian, it is not fully Bayesian like the
+Gittins index, which although is Bayes-optimal, can not be implemented
+efficiently in practice \cite{chapelle2011empirical}. The downside of Thompson
+sampling is that there is a lack of theoretical analysis. Chapelle et al.
 \cite{chapelle2011empirical}, however, demonstrate empirically that it
-outperforms UCB and $\epsilon$-greedy methods in certain cases.
+outperforms UCB \cite{auer2002finite} and $\epsilon$-greedy methods in certain
+cases.
+
+One such case is delayed feedback which is central to ad display. We may
+not process the rewards immediately because of runtime or user constraints,
+e.g. system is not fast enough or user does not immediately click on ad when on
+page. The feedback might be processes in batches between which lay a long
+amount of time. Thompson sampling alleviates the problem of delayed feedback by
+randomization over actions, while deterministic UCB suffers large regret when
+it gets locked on to a suboptimal choice.
 
 % TODO: what cases?
 
@@ -430,6 +519,7 @@ doesn't impact the choice of the next state.
 
 
 \subsection{Function approximation}
+\label{sec:function_approximation}
 Almost all the implementations \cite{abe2002empirical, silver2013concurrent,
 chapelle2011empirical} of targeted advertising considered in this seminar
 report required some sort of function approximation, regardless of whether they
@@ -446,7 +536,9 @@ TODO:
 \begin{itemize}
   \item{Define function approximation precisely: "We estimate and represent the
     value function as a function of state features and actions"}
-  \item{Relation to supervised machine learning.}
+  \item{Relation to supervised machine learning. Supervised learning model
+    should support learning from incrementally acquirred data. Nonstationary
+  target functions.}
   \item{In my examples: multivariate linear regression}
 \end{itemize}
 
@@ -454,7 +546,7 @@ TODO:
 \section{Conclusions}
 
 \subsubsection*{References}
-\nocite{*}
+%\nocite{*}
 
 \printbibliography[heading=none]
 
