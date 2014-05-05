@@ -51,7 +51,15 @@ Department of Computer Science, University of Helsinki\\\\
 \maketitle
 
 \begin{abstract}
-  TODO
+  On the Internet, content producers often make their profits through banner ad
+  clicks. Thus it is of interest to find ways to increase banner ad
+  click-through rates (CTR). One way towards this goal is targeted advertising,
+  in which the profile of the visiting user is used to determine which ads he
+  or she would be interested in. This seminar report surveys multi-armed bandit
+  and reinforcement learning approaches to targeted advertising. Thompson
+  sampling, mortal bandits, as well as temporal difference learning are the
+  methods considered. We also brush upon how to deal with the
+  high-dimensionality of typical marketing data.
 \end{abstract}
 
 \section{Introduction}
@@ -548,6 +556,8 @@ exploration strategy when choosing which actions to test out while solving the
 control problem, i.e. learning a policy $\pi$. For example, popular methods
 such as Sarsa and Q-learning often use something like $\epsilon$-greedy to
 select the next action for which to update the value function $Q$.
+
+\subsubsection{}
 
 
 \subsubsection{Direct, indirect and semi-direct reinforcement learning}
