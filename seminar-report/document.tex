@@ -566,14 +566,14 @@ world problems, though.
 
 \emph{Monte Carlo} (MC) methods, on the other hand, rely on experience to learn
 under unknown transition and reward probabilities. MC methods wait till the end
-of an episode to update the value functions of states that were encountered
-during the episode. The primary idea is encapsulated in the update rule below,
-where $s_t$ is the state and $a_t$ the action taken for time step $t$, $\alpha$
-is the step-size parameter, and $R_t = r_{t+1} + \gamma r_{t+2} + \gamma^2
-r_{t+3} + ... + \gamma^{T-1} r_{T}$ is the actual discounted return following
-time $t$.
+of an episode to update the value functions of state-action pairs that were
+encountered during the episode. The primary idea is encapsulated in the update
+rule below, where $s_t$ is the state and $a_t$ the action taken for time step
+$t$, $\alpha$ is the step-size parameter, and $R_t = r_{t+1} + \gamma r_{t+2} +
+\gamma^2 r_{t+3} + ... + \gamma^{T-1} r_{T}$ is the actual discounted return
+following time $t$.
 
-\begin{equation}
+\begin{equation}\label{eq:mc}
   Q(s_t, a_t) \leftarrow
   Q(s_t, a_t) + \alpha \big[ R_t - Q(s_t, a_t)\big]
 \end{equation}
@@ -584,16 +584,65 @@ learning until an episode has finished may be problematic if the episodes are
 long, because then all learning is delayed till the very end.
 
 A method more suitable for on-line, incremental learning is \emph{temporal
-difference} (TD) learning \cite{sutton1988learning}. The main idea is that
+difference} (TD) learning \cite{sutton1988learning}. The idea here is that
 after an action has been performed and a reward received, we immediately update
-the value function of the previous state accordingly. This leads to the update
-rule
+the value function of the previous state-action pair accordingly. This leads to
+the update rule
 
-\begin{equation}
+\begin{equation}\label{eq:td}
   Q(s_t, a_t) \leftarrow
   Q(s_t, a_t) + \alpha \big[ r_{t+1} + \gamma Q(s_{t+1}, a_{t+1})
   - Q(s_t, a_t)\big],
 \end{equation}
+
+where $Q(s_{t+1}, a_{t+1})$ is the current estimate of the value function for
+state-action pair $(s_{t+1}, a_{t+1})$.
+
+Essentially, TD learns estimates from previous estimates, it \emph{bootstraps},
+or in layman's terms, ``makes a guess from a guess''.  This is something
+that is also done by dynamic programming methods, so in a sense, TD methods can
+be seen as a combination of MC (learning from experience) and dynamic
+programming methods (bootstrapping).
+
+Although the right-hand side of Equation~\ref{eq:mc} can be re-written as the
+right-hand side of Equation~\ref{eq:td}, as is shown in Sutton's and Barto's
+book \cite{book}, we interpret the latter in a special way due to
+bootstrapping.
+
+With Equation~\ref{eq:td} we effectively have a solution to the prediction
+problem. There are two ways in which the control problem can be solved. Sarsa
+is an \emph{on-policy} control method meaning that it estimates the value
+function $Q^\pi$ according to the current behavior policy $\pi$. The more
+aggressive Q-learning is an \emph{off-policy} control method that directly
+approximates $Q^*$ regardless of the behavior policy followed by the learning
+procedure. The pseudocode for Sarsa is given in Algorithm~\ref{alg:sarsa}.
+Q-learning is similar, major difference being that the update rule becomes:
+
+\begin{equation}\label{eq:qlearning}
+  Q(s_t, a_t) \leftarrow
+  Q(s_t, a_t) + \alpha \big[ r_{t+1} + \gamma \max_a Q(s_{t+1}, a)
+  - Q(s_t, a_t)\big]
+\end{equation}
+
+\begin{algorithm}[H]
+  \caption{Sarsa, adapted from \cite{book}}
+  \label{alg:sarsa}
+  \begin{algorithmic}[1]
+    \State Initialize $Q(s, a)$ arbitrarily.
+    \For{each episode}
+      \State Initialize state $s$.
+      \State Choose action $a$ from $s$ using policy derived from $Q$. (*)
+      \For{each step of episode}
+        \State Take action $a$, observe reward $r$ and next state $s'$.
+        \State Choose action $a'$ from $s'$ using policy dervived from $Q$. (*)
+        \State $Q(s, a) \leftarrow Q(s, a) + \alpha \big[ r + \gamma Q(s',a') - Q(s, a)\big]$.
+        \State $s \leftarrow s'$ and $a \leftarrow a'$.
+      \EndFor
+    \EndFor
+  \end{algorithmic}
+\end{algorithm}
+
+\subsubsection{Eligibility traces and TD($\lambda$) algorithm}
 
 
 \subsubsection{Direct, indirect and semi-direct reinforcement learning}
