@@ -51,14 +51,14 @@ Department of Computer Science, University of Helsinki\\\\
 \maketitle
 
 \begin{abstract}
-  On the Internet, content producers often make profits through banner ad
-  clicks. Thus it is of interest to find ways to increase banner ad
-  click-through rates (CTR). One way towards this goal is targeted advertising,
-  in which the profile of the visiting user is used to determine which ads he
-  or she would be interested in. This seminar report surveys multi-armed bandit
-  and reinforcement learning approaches to targeted advertising. Thompson
-  sampling, mortal bandits, as well as temporal difference learning are the
-  methods considered.
+  On the Internet, content producers often rely on profits made through banner
+  ad clicks. Thus it is of interest to find ways to increase banner ad
+  click-through rates (CTR). One way to further this goal is targeted
+  advertising, in which the profile of the visiting user is used to determine
+  which ads he or she would be interested in. This seminar report surveys
+  multi-armed bandit and reinforcement learning approaches to targeted
+  advertising. Thompson sampling, mortal bandits, as well as temporal
+  difference learning are the methods considered.
 \end{abstract}
 
 \section{Introduction}
@@ -770,7 +770,30 @@ Algorithm~\ref{alg:directrl}.
   \caption{Direct-RL (sarsa) \cite{abe2002empirical}}
   \label{alg:directrl}
   \begin{algorithmic}[1]
-    \State ebin
+    \Require Regression module Base, input data $D = \setof{e_i \;|\;
+    i=1,...,N}$ where each episode $e_i = \setof{(s_{i,j}, a_{i,j}, r_{a,ij})
+    \;|\; j=1,...,l_i}$ consists of events that in turn consist of state,
+    action and reward.
+    \For{$e_i \in D$}
+      \State $D_{0,i} = \setof{(s_{i,j}, a_{i,j}, r_{a,ij}) \;|\;
+      j=1,...,l_i}$.
+    \EndFor
+    \State $D_0 = \cup_{i=1}^N D_{0,i}$.
+    \State $Q_0 = \text{Base}(D_0)$.
+    \For{$k= 1$ to $final$}
+      \For{$e_i \in D$}
+        \For{$j=1$ to $l_i - 1$}
+        \State $v^{(k)}_{i,j} = Q_{k-1}(s_{i,j}, a_{i,j}) +
+        \alpha_k \big[ r_{i,j} + \gamma Q_{k-1}(s_{i, j+1}, a_{i, j+1}) -
+        Q_{k-1}(s_{i,j}, a_{i,j}) \big]$.
+        \State $D_{k,i} = \setof{(s_{i,j}, a_{i,j}, v^{(k)}_{i,j}) \;|\;
+      j=1,...,l_i-1}$.
+        \EndFor
+      \EndFor
+      \State $D_k = \cup_{i=1}^N D_{k,i}$.
+      \State $Q_k = \text{Base}(D_k)$.
+    \EndFor
+    \State\Return{Final model, $Q_{final}$.}
   \end{algorithmic}
 \end{algorithm}
 
@@ -790,18 +813,21 @@ In the empirical section of their paper, Abe et al. \cite{abe2002empirical}
 give verification to the claim that customer behavior is too complex to model
 reliably. More precisely, they show via controlled experiments that in the
 context of their targeted marketing data, direct methods are better than
-indirect methods. They also demonstrate that their semi-direct method learnss to
+indirect methods. They also demonstrate that their semi-direct method learns to
 make better profit in shorter time than the purely 'direct' method.
 
-% TODO: ad banner?
-
+The example presented here was in the context of direct mail marketing.
+However, we could also use the presented methods in the banner ad domain by
+representing user profiles in an approriate way. Assume that the actions are
+the ads that can be displayed in some site-wide banner slot, with perhaps one
+action being not to show any ad at all. The profile of the user could be
+gathered from any information they have explicitly provided (e.g. if the site
+supports user registration), or, the data could be implicly gathered by
+tracking what the user does on the site. Things such as user age, gender,
+location, frequency of visits, keywords of pages visited etc. could be used as
+features.
 
 \subsubsection{Concurrent reinforcement learning}
-
-\begin{itemize}
-  \item{Introduce concurrent reinforcement learning.}
-\end{itemize}
-
 
 \section{Conclusions}
 
