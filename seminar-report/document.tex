@@ -724,10 +724,6 @@ be able to handle nonstationary target functions.
 An example of reinforcement learning with function approximation is given in
 the Section~\ref{sec:sequential-targeted-marketing}
 
-% TODO: example
-
-
-
 \subsubsection{Sequential targeted marketing}
 \label{sec:sequential-targeted-marketing}
 We now turn our attention to a real-world application of reinforcement learning
@@ -818,21 +814,91 @@ make better profit in shorter time than the purely 'direct' method.
 
 The example presented here was in the context of direct mail marketing.
 However, we could also use the presented methods in the banner ad domain by
-representing user profiles in an approriate way. Assume that the actions are
+representing user profiles in an appropriate way. Assume that the actions are
 the ads that can be displayed in some site-wide banner slot, with perhaps one
 action being not to show any ad at all. The profile of the user could be
 gathered from any information they have explicitly provided (e.g. if the site
-supports user registration), or, the data could be implicly gathered by
+supports user registration), or, the data could be implicitly gathered by
 tracking what the user does on the site. Things such as user age, gender,
 location, frequency of visits, keywords of pages visited etc. could be used as
 features.
 
 \subsubsection{Concurrent reinforcement learning}
+The 'direct' method of Algorithm~\ref{alg:directrl} is a batch method meaning
+that batches of episode data have to be given to the algorithm in order to
+learn the value function. In a real situation, we may wish to learn on-line in
+an iterative fashion so as to immediately improve our value function as
+responses are gathered. Moreover, in a web site we may have several concurrent
+users to which ads are being displayed. We may wish to learn from partial
+episodes so that information acquired with interactions with one user can be
+quickly assimilated and applied to other users' interactions as well.
+
+A fairly recent method, called \emph{concurrent reinforcement learning}
+\cite{silver2013concurrent}, modifies TD($\lambda$) to take the above two
+improvements into consideration.
+
+Each episode corresponds to a user's history with the company (web site in our
+case). This means that there are potentially thousands or millions of
+concurrent episodes that are very long. Learning after-the-fact in this case is
+not a viable option. Absence of customer interaction may be a signal of
+customer attrition, caused, for example, by an undesirable sequence of
+interactions with the company (e.g. offensive ad shown). Learning the actions
+that caused user attritions after months of inactivity may be too late as
+much damage could have been already done.
+
+In this customer interaction setting there is also the additional challenge of
+asynchronicity. Actions and rewards observed may not be sequentially aligned.
+Further the series of interactions tend to be very sparse when a global time
+step is used because most of the time, a user will not be using the web
+site.
+
+In the concurrent reinforcement learning problem, the agent interacts with many
+states (instances of the environment) in parallel. We use a discrete but small
+time steps $t$ and introduce null actions and null observations when no
+interaction with a user is happening. In the absence of reward, a value of zero
+is used.
+
+Silver et al. \cite{silver2013concurrent} modify TD($\lambda$) so that it is
+computationally efficient on huge data sets. By taking advantage of the
+asynchronous structure of the problem, they are able to devise a more efficient
+algorithm for concurrent RL.
+
+First of all, the reinforcement learning system makes decisions only when
+requested, otherwise executing null actions that do nothing. Decisions are
+things like choosing the ad to show, an observation of user is obtained, or
+when reward is procured. Second, the optimal policy learned must take into
+account the fact that non-null actions may be performed only at specific times.
+
+The concurrent temporal-difference learning algorithm is explained in detail in
+Silver et al. \cite{silver2013concurrent}. Tersely put, it combines multi-step
+TD updates for asynchronous update requests with the options framework for
+asynchronous decision requests.
+
 
 \section{Conclusions}
+In this seminar report, targeted advertising for ad banner CTR optimization
+was introduced, after which suitable multi-armed bandit and reinforcement
+learning approaches for the problem domain were presented.
+
+Thompson sampling is a robust Bayesian approach for balancing the exploration
+vs. exploitation trade-off. Mortal bandits should be considered when the ad
+campaigns are short-lived and rapidly changing. To model more complex
+interactions with visiting users, temporal-difference based methods such as the
+'direct' method for batch data, or the novel, on-line concurrent reinforcement
+learning method can be utilized. As user profiles tend to be very
+high-dimensional feature vectors, function approximation is required to apply
+the presented methods to real world scenarios.
+
+To the surprise of the author of this seminar report, there was not that much
+literature on how these RL targeted advertising systems work in practice. While
+there were some theoretical treatments of the subject, when it came down to
+practicalities, the literature tended to be very brief about them.
+Understandably there is some vested interest in keeping such details secret for
+business reasons. Hence, while the methods presented in this paper are on solid
+ground, the question of how to apply them to targeted advertising is something
+that this seminar report could often, at best, merely speculate about.
 
 \subsubsection*{References}
-%\nocite{*}
 
 \printbibliography[heading=none]
 
