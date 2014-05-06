@@ -52,13 +52,14 @@ Department of Computer Science, University of Helsinki\\\\
 
 \begin{abstract}
   On the Internet, content producers often rely on profits made through banner
-  ad clicks. Thus it is of interest to find ways to increase banner ad
+  ad clicks. Therefore it is of interest to find ways to increase banner ad
   click-through rates (CTR). One way to further this goal is targeted
   advertising, in which the profile of the visiting user is used to determine
   which ads he or she would be interested in. This seminar report surveys
   multi-armed bandit and reinforcement learning approaches to targeted
   advertising. Thompson sampling, mortal bandits, as well as temporal
-  difference learning are the methods considered.
+  difference based methods such as concurrent reinforcement learning are the
+  methods considered.
 \end{abstract}
 
 \section{Introduction}
@@ -72,7 +73,7 @@ and designed to attract the interest of visitors. When a visitor clicks such a
 banner, they are redirected to the advertiser's site, and the content producer
 is financially compensated for the referral.
 
-In this kind of advertising, it is the interest of the content producer to
+In this kind of advertising, it is in the interest of the content producer to
 maximize \emph{click-through rate} (CTR) of the banner ads: the number of times
 clicked divided by \emph{impressions}, the number of times shown. If a content
 producer has several ad banners it could show to the user, one strategy could
